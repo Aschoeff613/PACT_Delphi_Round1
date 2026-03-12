@@ -47,7 +47,7 @@ const questions = [
 function selectionLabel(value: number | null) {
   if (value === null) return "Not yet rated";
   if (value <= 2) return "Low";
-  if (value <= 5) return "Moderate";
+  if (value <= 4) return "Moderate";
   return "High";
 }
 
@@ -140,6 +140,59 @@ export function ReviewPanel({
         <span>{isCompleted ? "Case complete. You can move to the next case or revise any score." : "A case is complete when all four ratings are selected."}</span>
       </div>
 
+      {questions.map((question) => (
+        <div key={question.key} className="likert-block">
+          <div className="likert-copy">
+            <h3>{question.title}</h3>
+            <p>{question.help}</p>
+          </div>
+          <div className="slider-row">
+            <span className="slider-end-label">{question.low}</span>
+            <div className="slider-track-wrap">
+              <input
+                type="range"
+                min={1}
+                max={6}
+                step={0.5}
+                value={state[question.key] ?? 3.5}
+                className={cn("rating-slider", state[question.key] === null && "unset")}
+                onChange={(e) => {
+                  const val = Math.round(Number(e.target.value));
+                  update({ [question.key]: val as Partial<RatingState>[typeof question.key] } as Partial<RatingState>);
+                }}
+              />
+              <div className="slider-ticks">
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                  <span key={n} className={cn("slider-tick", state[question.key] === n && "active")}>{n}</span>
+                ))}
+              </div>
+            </div>
+            <span className="slider-end-label slider-end-right">{question.high}</span>
+          </div>
+          <div className="selection-note">
+            {state[question.key] !== null ? `${state[question.key]} — ${selectionLabel(state[question.key])}` : "Not yet rated"}
+          </div>
+        </div>
+      ))}
+
+      <label className="field-block">
+        <span>Optional comment</span>
+        <textarea
+          value={state.comment}
+          onChange={(event) => update({ comment: event.target.value })}
+          placeholder="Add nuance, edge cases, or rationale for discussion."
+        />
+      </label>
+
+      <label className="discussion-toggle">
+        <input
+          type="checkbox"
+          checked={state.marked_for_discussion}
+          onChange={(event) => update({ marked_for_discussion: event.target.checked })}
+        />
+        <span>Mark for discussion in the follow-up round</span>
+      </label>
+
       <div className="panel-nav-actions">
         {previousHref ? (
           <Link className="ghost-button" href={previousHref}>
@@ -171,58 +224,12 @@ export function ReviewPanel({
               <span className="case-nav-hint">Complete all four scores before moving on.</span>
             </div>
           )
-        ) : null}
+        ) : (
+          <Link className="ghost-button" href="/">
+            Back to sections
+          </Link>
+        )}
       </div>
-
-      {questions.map((question) => (
-        <div key={question.key} className="likert-block">
-          <div className="likert-copy">
-            <h3>{question.title}</h3>
-            <p>{question.help}</p>
-            <div className="likert-ends">
-              <span>1 = {question.low}</span>
-              <span>7 = {question.high}</span>
-            </div>
-          </div>
-          <div className="likert-grid">
-            {[1, 2, 3, 4, 5, 6, 7].map((value) => {
-              const selected = state[question.key] === value;
-              return (
-                <button
-                  key={value}
-                  type="button"
-                  className={cn("likert-button", selected && "selected")}
-                  onClick={() => update({ [question.key]: value } as Partial<RatingState>)}
-                  aria-pressed={selected}
-                >
-                  {value}
-                </button>
-              );
-            })}
-          </div>
-          <div className="selection-note">
-            Selected: {selectionLabel(state[question.key])}
-          </div>
-        </div>
-      ))}
-
-      <label className="field-block">
-        <span>Optional comment</span>
-        <textarea
-          value={state.comment}
-          onChange={(event) => update({ comment: event.target.value })}
-          placeholder="Add nuance, edge cases, or rationale for discussion."
-        />
-      </label>
-
-      <label className="discussion-toggle">
-        <input
-          type="checkbox"
-          checked={state.marked_for_discussion}
-          onChange={(event) => update({ marked_for_discussion: event.target.checked })}
-        />
-        <span>Mark for discussion in the follow-up round</span>
-      </label>
     </aside>
   );
 }

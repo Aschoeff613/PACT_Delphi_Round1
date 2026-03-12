@@ -43,8 +43,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       ) : null}
       <section className="hero">
         <div className="eyebrow">Modified Delphi review</div>
-        <h2>Choose a section and continue your review.</h2>
-        <p>Rate each case on four 1 to 7 scales, leave context where needed, and move quickly through the queue with autosave and persistent progress.</p>
+        <p className="hero-tagline">A benchmark for physician-AI teaming in high-stakes clinical tasks.</p>
+        <p>Rate each case on four 1 to 6 scales, leave context where needed, and move quickly through the queue with autosave and persistent progress.</p>
       </section>
       <SectionCards sections={sectionsWithProgress} />
     </>

@@ -4,8 +4,8 @@ import { AuthSignOut } from "@/components/auth-signout";
 import { getReviewerSession } from "@/lib/reviewer-session";
 
 export const metadata: Metadata = {
-  title: "Expert Case Review",
-  description: "Structured expert case rating for a modified Delphi exercise."
+  title: "PACTBench",
+  description: "Physician-AI Collaboration Teaming — Expert case review and benchmarking platform."
 };
 
 export default async function RootLayout({
@@ -22,8 +22,8 @@ export default async function RootLayout({
         <div className="app-shell">
           <header className="topbar">
             <div className="brand">
-              <h1>Expert Case Review</h1>
-              <p>Structured rating workspace for management, communication, and diagnostic case review.</p>
+              <div className="brand-eyebrow">ARISE Group · Stanford Medicine</div>
+              <h1>PACTBench</h1>
             </div>
             <div className="topbar-actions">
               {reviewer?.display_name ? <span className="hint">{reviewer.display_name}</span> : null}
