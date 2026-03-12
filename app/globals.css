@@ -833,10 +833,41 @@ textarea {
   color: #fecdd3;
 }
 
+.success-banner {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(20, 83, 45, 0.45);
+  background: rgba(20, 83, 45, 0.16);
+  color: #d1fae5;
+}
+
+.login-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.login-card {
+  border: 1px solid rgba(36, 48, 65, 0.75);
+  border-radius: 18px;
+  padding: 18px;
+  background: rgba(10, 15, 26, 0.68);
+}
+
+.login-card h3 {
+  margin: 6px 0 8px;
+}
+
+.login-card p {
+  color: var(--muted);
+}
+
 .login-panel form {
   display: grid;
   gap: 14px;
-  margin-top: 18px;
+  margin-top: 14px;
 }
 
 .hint {
@@ -904,6 +935,10 @@ td {
 
   .review-case-header {
     flex-direction: column;
+  }
+
+  .login-split {
+    grid-template-columns: 1fr;
   }
 
   .review-case-meta {

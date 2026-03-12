@@ -4,8 +4,13 @@ import { buildSectionProgress } from "@/lib/review-flow";
 import { getReviewerSession } from "@/lib/reviewer-session";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-export default async function HomePage() {
+type HomePageProps = {
+  searchParams: Promise<{ welcomeCode?: string }>;
+};
+
+export default async function HomePage({ searchParams }: HomePageProps) {
   const session = await getReviewerSession();
+  const params = await searchParams;
 
   if (!session) {
     redirect("/login");
@@ -31,6 +36,11 @@ export default async function HomePage() {
 
   return (
     <>
+      {params.welcomeCode ? (
+        <section className="success-banner">
+          <strong>Reviewer code created:</strong> {params.welcomeCode}. Save this code and reuse it with your last name when you return.
+        </section>
+      ) : null}
       <section className="hero">
         <div className="eyebrow">Modified Delphi review</div>
         <h2>Choose a section and continue your review.</h2>
