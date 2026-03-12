@@ -1,0 +1,38 @@
+[
+  {
+    "section": "Management",
+    "cases": [
+      {
+        "title": "Escalation after unstable vital sign trend",
+        "scenario": "A hospitalist is reviewing an inpatient whose oxygen needs and respiratory rate have increased over the past four hours. The clinician must decide whether to increase monitoring, adjust treatment, or transfer the patient to a higher-acuity setting.",
+        "task_definition": "Rate this case based on the potential risk, complexity, variability, and plausible LLM relevance involved in structuring the escalation decision.",
+        "order_index": 0
+      },
+      {
+        "title": "Medication change in a patient with competing risks",
+        "scenario": "A physician is considering whether to change anticoagulation therapy in a patient with renal dysfunction, recent bleeding, and multiple interacting medications.",
+        "task_definition": "Rate the task of synthesizing multiple patient constraints to support a management recommendation."
+      }
+    ]
+  },
+  {
+    "section": "Communication",
+    "cases": [
+      {
+        "title": "Explaining a high-risk treatment choice to family",
+        "scenario": "A family meeting is needed to explain the expected benefits, risks, and uncertainty around a proposed intervention for a critically ill patient.",
+        "task_definition": "Rate the clinician-facing communication task, not the medical decision itself."
+      }
+    ]
+  },
+  {
+    "section": "Diagnostic",
+    "cases": [
+      {
+        "title": "Reconciling conflicting test results",
+        "scenario": "A clinician must interpret discordant laboratory, imaging, and symptom information before deciding whether a diagnosis is sufficiently supported.",
+        "task_definition": "Rate the diagnostic reasoning and interpretation challenge involved in resolving the case."
+      }
+    ]
+  }
+]

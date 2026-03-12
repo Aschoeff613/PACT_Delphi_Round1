@@ -1,0 +1,321 @@
+[
+  {
+    "section": "Management",
+    "cases": [
+      {
+        "source_id": "M1",
+        "title": "Empiric antibiotic selection for sepsis",
+        "scenario": "A 70-year-old with recurrent urinary infections presents with fever, dysuria, and hypotension. Prior cultures showed fluoroquinolone resistance, and you need to choose empiric antibiotics before new culture data return.",
+        "review_scenario": "A 70-year-old with recurrent urinary infections presents with fever, dysuria, and hypotension. Prior cultures showed fluoroquinolone resistance, and you need to choose empiric antibiotics before new culture data return.",
+        "task_definition": "Selecting appropriate empiric antimicrobial coverage considering resistance patterns, allergy history, prior cultures, renal function, and local antibiogram data.",
+        "order_index": 0
+      },
+      {
+        "source_id": "M2",
+        "title": "ED disposition decisions (admit vs. discharge) & PCP triage to ED decision-making",
+        "scenario": "A patient with heart failure presents with dyspnea, borderline oxygen saturation, and limited outpatient support. The workup is reassuring enough that discharge is possible, but the risk of decompensation after going home is not trivial.",
+        "review_scenario": "A patient with heart failure presents with dyspnea, borderline oxygen saturation, and limited outpatient support. The workup is reassuring enough that discharge is possible, but the risk of decompensation after going home is not trivial.",
+        "task_definition": "Determining appropriate level of care for patients with borderline presentations where both admission and discharge are defensible. Primary care determination of whether a patient requires emergency evaluation vs. can be safely managed outpatient with available resources. 11-56% inappropriate ED referral rate.",
+        "order_index": 1
+      },
+      {
+        "source_id": "M3",
+        "title": "Chronic disease medication titration",
+        "scenario": "A patient with longstanding hypertension is seen after several visits with persistently poor control despite taking multiple medications. You need to decide whether to intensify treatment now or defer changes until there is better follow-up and more context.",
+        "review_scenario": "A patient with longstanding hypertension is seen after several visits with persistently poor control despite taking multiple medications. You need to decide whether to intensify treatment now or defer changes until there is better follow-up and more context.",
+        "task_definition": "Adjusting medications for chronic conditions when patients present with suboptimal control, requiring integration of acute context, chronic trajectory, and outpatient follow-up reliability.",
+        "order_index": 2
+      },
+      {
+        "source_id": "M4",
+        "title": "Medication reconciliation in polypharmacy",
+        "scenario": "A 60-year-old is admitted with confusion after taking several chronic medications, including a benzodiazepine, a diuretic, and a sedating sleep aid. You need to determine which drugs may be contributing and what should be held, continued, or deprescribed.",
+        "review_scenario": "A 60-year-old is admitted with confusion after taking several chronic medications, including a benzodiazepine, a diuretic, and a sedating sleep aid. You need to determine which drugs may be contributing and what should be held, continued, or deprescribed.",
+        "task_definition": "Identifying harmful drug interactions, redundancies, and deprescribing opportunities in patients on multiple medications. >90% CDS alert override rate due to fatigue.",
+        "order_index": 3
+      },
+      {
+        "source_id": "M5",
+        "title": "Test result follow-up and closed-loop tracking",
+        "scenario": "A CT ordered for one complaint reveals a serious incidental abnormality that will need follow-up after discharge. You need to decide how urgently it must be addressed, who is responsible for the follow-up plan, and how to make sure it does not get lost.",
+        "review_scenario": "A CT ordered for one complaint reveals a serious incidental abnormality that will need follow-up after discharge. You need to decide how urgently it must be addressed, who is responsible for the follow-up plan, and how to make sure it does not get lost.",
+        "task_definition": "Ensuring abnormal results are communicated, acted upon, and tracked to completion. 6.8% abnormal labs and 7.1% abnormal imaging lack follow-up (Singh); present in 20-30% of ambulatory malpractice claims.",
+        "order_index": 4
+      },
+      {
+        "source_id": "M6",
+        "title": "Low-value care avoidance (imaging/testing)",
+        "scenario": "A child with bronchiolitis is stable and clinically consistent with a viral illness, but the family is asking for a chest X-ray for reassurance. You need to decide whether additional testing would help or would only add cost, radiation, and follow-up burden.",
+        "review_scenario": "A child with bronchiolitis is stable and clinically consistent with a viral illness, but the family is asking for a chest X-ray for reassurance. You need to decide whether additional testing would help or would only add cost, radiation, and follow-up burden.",
+        "task_definition": "Deciding against testing/imaging when clinical evidence doesn't support it, despite medicolegal pressure or patient expectations. 6.8% abnormal labs and 7.1% abnormal imaging lack follow-up.",
+        "order_index": 5
+      },
+      {
+        "source_id": "M7",
+        "title": "Opioid prescribing for discharged patients",
+        "scenario": "A patient with acute renal colic improves in the emergency department and is ready for discharge. You need to decide whether to prescribe opioids for home use, how much to give, and what risk factors should change that plan.",
+        "review_scenario": "A patient with acute renal colic improves in the emergency department and is ready for discharge. You need to decide whether to prescribe opioids for home use, how much to give, and what risk factors should change that plan.",
+        "task_definition": "Balancing adequate pain control against addiction risk, diversion, and regulatory scrutiny when prescribing opioids at discharge or in the outpatient setting.",
+        "order_index": 6
+      },
+      {
+        "source_id": "M8",
+        "title": "Resource allocation and triage under constraints",
+        "scenario": "The department is full, several patients are boarding, and only one CT slot is immediately available. You need to decide which patients require the closest reassessment and which limited resources should go to whom first.",
+        "review_scenario": "The department is full, several patients are boarding, and only one CT slot is immediately available. You need to decide which patients require the closest reassessment and which limited resources should go to whom first.",
+        "task_definition": "Determining intensity of workup, monitoring, and intervention based on competing demands, limited resources, and illness severity.",
+        "order_index": 7
+      },
+      {
+        "source_id": "M9",
+        "title": "Goals-concordant care in acute deterioration",
+        "scenario": "A patient with advanced illness develops acute respiratory distress, and the chart documents DNR/DNI status but little detail about acceptable escalation. The family wants everything done, while the bedside team is unsure which treatments are still consistent with the patient\u2019s goals.",
+        "review_scenario": "A patient with advanced illness develops acute respiratory distress, and the chart documents DNR/DNI status but little detail about acceptable escalation. The family wants everything done, while the bedside team is unsure which treatments are still consistent with the patient\u2019s goals.",
+        "task_definition": "Aligning acute treatment decisions with patient preferences and goals of care when the patient cannot participate in real-time decision-making.",
+        "order_index": 8
+      },
+      {
+        "source_id": "M10",
+        "title": "Managing contradictory guidelines in multimorbid patients",
+        "scenario": "A septic patient with heart failure and chronic kidney disease needs urgent treatment, but the guideline-concordant plan for one condition increases risk for the others. You need to choose a management strategy when multiple specialty recommendations point in different directions.",
+        "review_scenario": "A septic patient with heart failure and chronic kidney disease needs urgent treatment, but the guideline-concordant plan for one condition increases risk for the others. You need to choose a management strategy when multiple specialty recommendations point in different directions.",
+        "task_definition": "Navigating treatment decisions when evidence-based guidelines for one condition conflict with guidelines for a co-existing condition, requiring integration of competing risks and benefits.",
+        "order_index": 9
+      },
+      {
+        "source_id": "M11",
+        "title": "Predicting clinical deterioration and acting preemptively",
+        "scenario": "A patient looks unwell and has borderline vital signs but does not yet meet formal criteria for ICU transfer or a sepsis bundle. You need to decide whether to intervene early based on pattern recognition or wait for clearer objective deterioration.",
+        "review_scenario": "A patient looks unwell and has borderline vital signs but does not yet meet formal criteria for ICU transfer or a sepsis bundle. You need to decide whether to intervene early based on pattern recognition or wait for clearer objective deterioration.",
+        "task_definition": "Recognizing early signals of impending deterioration and initiating management before the patient meets formal criteria for intervention. Requires pattern recognition from experience rather than protocol adherence.",
+        "order_index": 10
+      }
+    ]
+  },
+  {
+    "section": "Communication",
+    "cases": [
+      {
+        "source_id": "C1",
+        "title": "Informed consent under impaired capacity",
+        "scenario": "An intoxicated patient needs an urgent but non-life-saving procedure and cannot clearly demonstrate understanding of the risks and options. You need to decide whether the patient has capacity, whether treatment can proceed, and whether a surrogate should be involved.",
+        "review_scenario": "An intoxicated patient needs an urgent but non-life-saving procedure and cannot clearly demonstrate understanding of the risks and options. You need to decide whether the patient has capacity, whether treatment can proceed, and whether a surrogate should be involved.",
+        "task_definition": "Obtaining informed consent when decision-making capacity is questionable, requiring simultaneous capacity assessment and risk communication.",
+        "order_index": 0
+      },
+      {
+        "source_id": "C2",
+        "title": "Critical diagnosis disclosure and shared decision-making",
+        "scenario": "You are meeting a patient whose imaging strongly suggests a new cancer diagnosis. In the same conversation, you need to explain the finding, respond to emotion, and help the patient understand the immediate next decisions.",
+        "review_scenario": "You are meeting a patient whose imaging strongly suggests a new cancer diagnosis. In the same conversation, you need to explain the finding, respond to emotion, and help the patient understand the immediate next decisions.",
+        "task_definition": "Communicating a new serious diagnosis while simultaneously engaging the patient in treatment decision-making under emotional distress.",
+        "order_index": 1
+      },
+      {
+        "source_id": "C3",
+        "title": "Health literacy-adapted communication",
+        "scenario": "A patient with limited health literacy needs discharge instructions for a new high-risk condition and a medication that requires careful adherence. You need to explain the plan in a way the patient can actually understand and use at home.",
+        "review_scenario": "A patient with limited health literacy needs discharge instructions for a new high-risk condition and a medication that requires careful adherence. You need to explain the plan in a way the patient can actually understand and use at home.",
+        "task_definition": "Adjusting clinical communication to patient health literacy level while ensuring adequate understanding of diagnosis, treatment plan, and follow-up.",
+        "order_index": 2
+      },
+      {
+        "source_id": "C4",
+        "title": "Cognitive task interruption and resumption",
+        "scenario": "You are calculating a weight-based medication dose for a critically ill patient when a code blue interrupts you. When you return to the original task a few minutes later, you need to resume safely without losing context or skipping a step.",
+        "review_scenario": "You are calculating a weight-based medication dose for a critically ill patient when a code blue interrupts you. When you return to the original task a few minutes later, you need to resume safely without losing context or skipping a step.",
+        "task_definition": "Returning to a complex cognitive task after an interruption, with risk of losing context, skipping steps, or making errors due to disrupted working memory.",
+        "order_index": 3
+      },
+      {
+        "source_id": "C5",
+        "title": "ED physician handoffs (shift change)",
+        "scenario": "At shift change, you are handing off a patient with pending labs, evolving vital sign abnormalities, and an unclear disposition. The next clinician will be making decisions soon, so the key risks and unfinished work need to be communicated accurately.",
+        "review_scenario": "At shift change, you are handing off a patient with pending labs, evolving vital sign abnormalities, and an unclear disposition. The next clinician will be making decisions soon, so the key risks and unfinished work need to be communicated accurately.",
+        "task_definition": "Transferring critical clinical information at shift change where errors in transmission directly threaten patient safety.",
+        "order_index": 4
+      },
+      {
+        "source_id": "C6",
+        "title": "Human-AI disagreement management",
+        "scenario": "A decision-support tool recommends an aggressive workup that conflicts with your own bedside assessment. You need to decide whether to follow the AI recommendation, override it, or gather more data while managing uncertainty about which judgment to trust.",
+        "review_scenario": "A decision-support tool recommends an aggressive workup that conflicts with your own bedside assessment. You need to decide whether to follow the AI recommendation, override it, or gather more data while managing uncertainty about which judgment to trust.",
+        "task_definition": "Managing the cognitive conflict when AI-generated recommendations contradict the physician's clinical judgment, requiring metacognitive evaluation of both the AI output and one's own reasoning.",
+        "order_index": 5
+      },
+      {
+        "source_id": "C7",
+        "title": "Goals of care conversations",
+        "scenario": "A seriously ill patient is deteriorating, family members are at the bedside, and decisions about code status or escalation cannot wait until later. You need to lead a goals-of-care conversation under time pressure while emotions are high.",
+        "review_scenario": "A seriously ill patient is deteriorating, family members are at the bedside, and decisions about code status or escalation cannot wait until later. You need to lead a goals-of-care conversation under time pressure while emotions are high.",
+        "task_definition": "Facilitating time-sensitive discussions about treatment goals, code status, and end-of-life preferences, where framing directly impacts patient/family decisions.",
+        "order_index": 6
+      },
+      {
+        "source_id": "C8",
+        "title": "Patient portal message triage",
+        "scenario": "An overnight portal message says the patient\u2019s pain is worse after a recent visit and now includes a new fever. You need to decide whether this can wait for routine follow-up or whether it signals a problem that needs urgent escalation.",
+        "review_scenario": "An overnight portal message says the patient\u2019s pain is worse after a recent visit and now includes a new fever. You need to decide whether this can wait for routine follow-up or whether it signals a problem that needs urgent escalation.",
+        "task_definition": "Triaging and responding to patient-initiated messages that may contain time-sensitive or high-risk clinical information, within a workflow not designed for acute decision-making.",
+        "order_index": 7
+      },
+      {
+        "source_id": "C9",
+        "title": "Communicating diagnostic or prognostic uncertainty to patients",
+        "scenario": "The workup is reassuring but not definitive, and you cannot fully exclude a dangerous diagnosis. You need to explain the remaining uncertainty honestly while still giving the patient a clear plan and preserving trust.",
+        "review_scenario": "The workup is reassuring but not definitive, and you cannot fully exclude a dangerous diagnosis. You need to explain the remaining uncertainty honestly while still giving the patient a clear plan and preserving trust.",
+        "task_definition": "Conveying honest uncertainty about diagnosis, prognosis, or treatment effectiveness to patients without eroding trust or causing unnecessary anxiety. Requires calibrating how much uncertainty to share and framing it constructively.",
+        "order_index": 8
+      },
+      {
+        "source_id": "C10",
+        "title": "Establishing shared understanding with consultants and teams",
+        "scenario": "You call a consultant because you are worried about a high-risk process, but the receiving team seems to view the case as routine. You need to communicate the urgency and your mental model clearly enough that both teams are acting on the same problem.",
+        "review_scenario": "You call a consultant because you are worried about a high-risk process, but the receiving team seems to view the case as routine. You need to communicate the urgency and your mental model clearly enough that both teams are acting on the same problem.",
+        "task_definition": "Ensuring that the receiving clinician (consultant, admitting team, specialist) has the same understanding of the clinical situation, urgency, and decision rationale as the referring clinician.",
+        "order_index": 9
+      },
+      {
+        "source_id": "C11",
+        "title": "History elicitation under patient communication barriers",
+        "scenario": "A patient with limited ability to communicate arrives without a reliable historian, and the available story is fragmented across EMS, prior records, and partial patient responses. You need to reconstruct the history well enough to guide care despite those barriers.",
+        "review_scenario": "A patient with limited ability to communicate arrives without a reliable historian, and the available story is fragmented across EMS, prior records, and partial patient responses. You need to reconstruct the history well enough to guide care despite those barriers.",
+        "task_definition": "Obtaining a reliable clinical history from patients with impaired communication due to cognitive dysfunction, altered mental status, language barriers, low health literacy, or psychiatric overlay, requiring triangulation across multiple sources to reconstruct accurate clinical narrative.",
+        "order_index": 10
+      }
+    ]
+  },
+  {
+    "section": "Diagnostic",
+    "cases": [
+      {
+        "source_id": "D1",
+        "title": "Undifferentiated chest pain risk stratification",
+        "scenario": "A 45-year-old with chest pain has a nondiagnostic ECG and only a mild troponin elevation. You need to decide whether this presentation warrants discharge, observation, or a more aggressive workup for a potentially dangerous cause.",
+        "review_scenario": "A 45-year-old with chest pain has a nondiagnostic ECG and only a mild troponin elevation. You need to decide whether this presentation warrants discharge, observation, or a more aggressive workup for a potentially dangerous cause.",
+        "task_definition": "Determining disposition and workup for patients whose risk factors place them in an intermediate-risk category, requiring synthesis of history, ECG, labs, and risk scores. 47% physician difficulty rate; top malpractice claim; 2-4x physician variation.",
+        "order_index": 0
+      },
+      {
+        "source_id": "D2",
+        "title": "Sepsis recognition in ambiguous presentations",
+        "scenario": "An older immunocompromised patient presents with fatigue, mild confusion, and borderline vital signs but no clear source of infection. You need to decide whether this is early sepsis, a less dangerous process, or something else entirely.",
+        "review_scenario": "An older immunocompromised patient presents with fatigue, mild confusion, and borderline vital signs but no clear source of infection. You need to decide whether this is early sepsis, a less dangerous process, or something else entirely.",
+        "task_definition": "Early identification of SIRS/sepsis in patients with vague symptoms or atypical biomarkers. 7.6% mortality increase per hour of antibiotic delay; SEP-3 sensitivity only 54-70%; bundle compliance 20-70%.",
+        "order_index": 1
+      },
+      {
+        "source_id": "D3",
+        "title": "Stroke diagnosis including posterior circulation",
+        "scenario": "An older patient presents with dizziness, gait instability, and nystagmus, but the initial imaging is equivocal and the NIH stroke scale is low. You need to decide whether this is a posterior circulation stroke that demands urgent treatment or a less dangerous vestibular process.",
+        "review_scenario": "An older patient presents with dizziness, gait instability, and nystagmus, but the initial imaging is equivocal and the NIH stroke scale is low. You need to decide whether this is a posterior circulation stroke that demands urgent treatment or a less dangerous vestibular process.",
+        "task_definition": "Recognizing stroke presentations including subtle posterior circulation strokes. 9-26% misdiagnosis rate; posterior strokes missed 20-40%; every 15-min delay increases mortality.",
+        "order_index": 2
+      },
+      {
+        "source_id": "D4",
+        "title": "Pulmonary embolism evaluation",
+        "scenario": "A postpartum patient presents with pleuritic chest pain, tachycardia, and shortness of breath. You need to judge the likelihood of pulmonary embolism and choose the next diagnostic step without exposing the patient to unnecessary testing.",
+        "review_scenario": "A postpartum patient presents with pleuritic chest pain, tachycardia, and shortness of breath. You need to judge the likelihood of pulmonary embolism and choose the next diagnostic step without exposing the patient to unnecessary testing.",
+        "task_definition": "Risk-stratifying and evaluating for PE with variable pre-test probability, D-dimer thresholds, and imaging decisions. Missed in ~33% of fatal autopsy cases. top 5 malpractice claim.",
+        "order_index": 3
+      },
+      {
+        "source_id": "D5",
+        "title": "Pediatric abdominal pain evaluation",
+        "scenario": "A young child presents with abdominal pain, abnormal vital signs, and limited ability to explain the symptoms. You need to decide how aggressively to evaluate for a surgical emergency while minimizing unnecessary radiation or invasive testing.",
+        "review_scenario": "A young child presents with abdominal pain, abnormal vital signs, and limited ability to explain the symptoms. You need to decide how aggressively to evaluate for a surgical emergency while minimizing unnecessary radiation or invasive testing.",
+        "task_definition": "Determining appropriate workup intensity for children with abdominal pain, balancing diagnostic yield against radiation/procedural risk.",
+        "order_index": 4
+      },
+      {
+        "source_id": "D6",
+        "title": "Altered mental status workup",
+        "scenario": "A patient with severe confusion, abnormal vital signs, and a history that could fit toxic, infectious, or neurologic causes arrives without a reliable historian. You need to structure the workup quickly while the differential remains broad and high risk.",
+        "review_scenario": "A patient with severe confusion, abnormal vital signs, and a history that could fit toxic, infectious, or neurologic causes arrives without a reliable historian. You need to structure the workup quickly while the differential remains broad and high risk.",
+        "task_definition": "Systematic evaluation of AMS across metabolic, infectious, neurologic, toxic, and psychiatric etiologies when the presentation is undifferentiated.",
+        "order_index": 5
+      },
+      {
+        "source_id": "D7",
+        "title": "Diagnosis with incomplete or limited data",
+        "scenario": "A patient may have a serious diagnosis, but the usual confirming data are missing because the key test is incomplete, contraindicated, or declined. You need to decide how much diagnostic confidence is possible with limited information.",
+        "review_scenario": "A patient may have a serious diagnosis, but the usual confirming data are missing because the key test is incomplete, contraindicated, or declined. You need to decide how much diagnostic confidence is possible with limited information.",
+        "task_definition": "Evaluating potential diagnoses when standard diagnostic information is unavailable, inadequate, or contraindicated.",
+        "order_index": 6
+      },
+      {
+        "source_id": "D8",
+        "title": "Imaging and test interpretation with incomplete context",
+        "scenario": "An abnormal test result reaches you with little or no clinical context about why it was ordered or what the patient looked like at the time. You need to decide how much weight to give the finding and what follow-up it should trigger.",
+        "review_scenario": "An abnormal test result reaches you with little or no clinical context about why it was ordered or what the patient looked like at the time. You need to decide how much weight to give the finding and what follow-up it should trigger.",
+        "task_definition": "Interpreting diagnostic studies (imaging, ECG, labs) when clinical context is limited or absent. Chest X-ray discordance 20-30%; mammography sensitivity 62-91% across radiologists.",
+        "order_index": 7
+      },
+      {
+        "source_id": "D9",
+        "title": "Undifferentiated symptoms in vulnerable populations",
+        "scenario": "A patient from a vulnerable population cannot clearly describe symptoms, and the presentation could reflect either benign illness or a high-risk diagnosis. You need to infer what matters most from sparse or indirect information.",
+        "review_scenario": "A patient from a vulnerable population cannot clearly describe symptoms, and the presentation could reflect either benign illness or a high-risk diagnosis. You need to infer what matters most from sparse or indirect information.",
+        "task_definition": "Diagnostic reasoning for patients who cannot clearly communicate symptoms or whose presentations are inherently atypical (young children, elderly, cognitively impaired, non-verbal).",
+        "order_index": 8
+      },
+      {
+        "source_id": "D10",
+        "title": "High-risk diagnosis confirmation before irreversible intervention",
+        "scenario": "A time-sensitive diagnosis is suspected, and the next treatment step could be beneficial if correct but harmful if wrong. You need to decide whether the evidence is strong enough to proceed before certainty is possible.",
+        "review_scenario": "A time-sensitive diagnosis is suspected, and the next treatment step could be beneficial if correct but harmful if wrong. You need to decide whether the evidence is strong enough to proceed before certainty is possible.",
+        "task_definition": "Confirming a time-sensitive diagnosis with sufficient confidence to initiate an irreversible or high-risk treatment under time pressure.",
+        "order_index": 9
+      },
+      {
+        "source_id": "D11",
+        "title": "Cancer screening interpretation and follow-up",
+        "scenario": "A screening or incidental cancer-related result is abnormal but not definitive. You need to decide whether to escalate immediately, repeat testing, or monitor over time while balancing anxiety, overdiagnosis, and missed disease.",
+        "review_scenario": "A screening or incidental cancer-related result is abnormal but not definitive. You need to decide whether to escalate immediately, repeat testing, or monitor over time while balancing anxiety, overdiagnosis, and missed disease.",
+        "task_definition": "Interpreting ambiguous screening results (imaging, labs) and determining appropriate follow-up intensity, balancing overdiagnosis against missed early-stage disease.",
+        "order_index": 10
+      },
+      {
+        "source_id": "D12",
+        "title": "Incidental finding management",
+        "scenario": "A test ordered for one problem unexpectedly reveals a different abnormality that may or may not matter. You need to decide whether to work it up now, arrange outpatient follow-up, or monitor without overreacting.",
+        "review_scenario": "A test ordered for one problem unexpectedly reveals a different abnormality that may or may not matter. You need to decide whether to work it up now, arrange outpatient follow-up, or monitor without overreacting.",
+        "task_definition": "Determining appropriate workup and follow-up for unexpected findings discovered during evaluation for a different clinical question.",
+        "order_index": 11
+      },
+      {
+        "source_id": "D13",
+        "title": "Premature closure after initial diagnosis identified",
+        "scenario": "A dramatic diagnosis has already been identified, and the team\u2019s attention is anchored there. You need to decide whether anything important could still be missing despite having already found one obvious explanation.",
+        "review_scenario": "A dramatic diagnosis has already been identified, and the team\u2019s attention is anchored there. You need to decide whether anything important could still be missing despite having already found one obvious explanation.",
+        "task_definition": "Stopping the diagnostic search after identifying an initial finding, missing co-existing conditions, secondary injuries, or alternative diagnoses that explain the full clinical picture.",
+        "order_index": 12
+      },
+      {
+        "source_id": "D14",
+        "title": "Re-evaluating a working diagnosis when new data contradicts it",
+        "scenario": "A patient is being treated for a working diagnosis, but the clinical course and new data no longer fit. You need to decide when to abandon the original frame and reopen the differential.",
+        "review_scenario": "A patient is being treated for a working diagnosis, but the clinical course and new data no longer fit. You need to decide when to abandon the original frame and reopen the differential.",
+        "task_definition": "Updating or abandoning an initial diagnostic impression when subsequent information (labs, imaging, clinical trajectory) is inconsistent with the working diagnosis. Requires metacognitive awareness that the initial frame may be wrong.",
+        "order_index": 13
+      },
+      {
+        "source_id": "D15",
+        "title": "Integrating discordant diagnostic information",
+        "scenario": "History, exam, labs, and imaging are pointing in different directions rather than converging on a single answer. You need to decide which signals deserve the most trust and how to integrate the conflicting information into one plan.",
+        "review_scenario": "History, exam, labs, and imaging are pointing in different directions rather than converging on a single answer. You need to decide which signals deserve the most trust and how to integrate the conflicting information into one plan.",
+        "task_definition": "Synthesizing and weighing conflicting signals across data sources (history vs. labs vs. imaging vs. exam) when they point toward different diagnoses, without defaulting to a single data source.",
+        "order_index": 14
+      },
+      {
+        "source_id": "D16",
+        "title": "EHR signal-to-noise filtering under information overload",
+        "scenario": "A clinically complex patient has years of copied-forward notes, redundant alerts, and buried key details in the chart. You need to identify the few pieces of information that actually change today\u2019s decision-making.",
+        "review_scenario": "A clinically complex patient has years of copied-forward notes, redundant alerts, and buried key details in the chart. You need to identify the few pieces of information that actually change today\u2019s decision-making.",
+        "task_definition": "Identifying clinically relevant findings and red flags within an EHR record saturated with repetitive notes, auto-populated text, redundant alerts, and irrelevant historical entries, requiring active filtering to extract the signal that drives decision-making.",
+        "order_index": 15
+      }
+    ]
+  }
+]

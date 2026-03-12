@@ -1,0 +1,185 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+
+type RatingState = {
+  risk_severity: number | null;
+  cognitive_complexity: number | null;
+  performance_variability: number | null;
+  ai_relevance: number | null;
+  comment: string;
+  marked_for_discussion: boolean;
+};
+
+const questions = [
+  {
+    key: "risk_severity",
+    title: "Risk Severity",
+    help: "How much harm could result if this task is performed poorly?",
+    low: "Minimal harm",
+    high: "Severe harm / mortality risk"
+  },
+  {
+    key: "cognitive_complexity",
+    title: "Cognitive Complexity",
+    help: "How much synthesis, judgment, and pressure does this task require?",
+    low: "Straightforward, low synthesis",
+    high: "Highly complex, multi-source reasoning under pressure"
+  },
+  {
+    key: "performance_variability",
+    title: "Performance Variability",
+    help: "How much would performance vary across clinicians or settings?",
+    low: "Consistent across clinicians/settings",
+    high: "Highly variable across clinicians/settings"
+  },
+  {
+    key: "ai_relevance",
+    title: "AI Relevance",
+    help: "How plausible is meaningful LLM support for this task?",
+    low: "Little plausible LLM support",
+    high: "Strong plausible LLM support"
+  }
+] as const;
+
+function selectionLabel(value: number | null) {
+  if (value === null) return "Not yet rated";
+  if (value <= 2) return "Low";
+  if (value <= 5) return "Moderate";
+  return "High";
+}
+
+export function ReviewPanel({
+  caseId,
+  initial
+}: {
+  caseId: string;
+  initial: RatingState;
+}) {
+  const [state, setState] = useState<RatingState>(initial);
+  const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const debounceRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    setState(initial);
+    setSavedAt(null);
+    setStatus("idle");
+  }, [caseId, initial]);
+
+  const isCompleted = useMemo(() => {
+    return [
+      state.risk_severity,
+      state.cognitive_complexity,
+      state.performance_variability,
+      state.ai_relevance
+    ].every((value) => value !== null);
+  }, [state]);
+  const answeredCount = useMemo(() => {
+    return [
+      state.risk_severity,
+      state.cognitive_complexity,
+      state.performance_variability,
+      state.ai_relevance
+    ].filter((value) => value !== null).length;
+  }, [state]);
+
+  async function save(next: RatingState) {
+    setStatus("saving");
+    const response = await fetch("/api/ratings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ caseId, ...next })
+    });
+
+    if (!response.ok) {
+      setStatus("error");
+      return;
+    }
+
+    setStatus("saved");
+    setSavedAt(new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }));
+  }
+
+  function queueSave(next: RatingState) {
+    if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    debounceRef.current = window.setTimeout(() => {
+      void save(next);
+    }, 350);
+  }
+
+  function update(partial: Partial<RatingState>) {
+    const next = { ...state, ...partial };
+    setState(next);
+    queueSave(next);
+  }
+
+  return (
+    <aside className="review-scoring-panel">
+      <div className="panel-header">
+        <div>
+          <div className="eyebrow">Structured rating</div>
+          <h2>Case scoring</h2>
+        </div>
+        <span className={cn("save-state", status)}>{status === "saved" ? `Saved ${savedAt}` : status === "saving" ? "Saving..." : status === "error" ? "Save failed" : "Ready"}</span>
+      </div>
+
+      <div className="completion-banner">
+        <strong>{isCompleted ? "Completed" : "In progress"}</strong>
+        <span>{answeredCount} of 4 scales answered</span>
+        <span>{isCompleted ? "Case complete. You can move to the next case or revise any score." : "A case is complete when all four ratings are selected."}</span>
+      </div>
+
+      {questions.map((question) => (
+        <div key={question.key} className="likert-block">
+          <div className="likert-copy">
+            <h3>{question.title}</h3>
+            <p>{question.help}</p>
+            <div className="likert-ends">
+              <span>1 = {question.low}</span>
+              <span>7 = {question.high}</span>
+            </div>
+          </div>
+          <div className="likert-grid">
+            {[1, 2, 3, 4, 5, 6, 7].map((value) => {
+              const selected = state[question.key] === value;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  className={cn("likert-button", selected && "selected")}
+                  onClick={() => update({ [question.key]: value } as Partial<RatingState>)}
+                  aria-pressed={selected}
+                >
+                  {value}
+                </button>
+              );
+            })}
+          </div>
+          <div className="selection-note">
+            Selected: {selectionLabel(state[question.key])}
+          </div>
+        </div>
+      ))}
+
+      <label className="field-block">
+        <span>Optional comment</span>
+        <textarea
+          value={state.comment}
+          onChange={(event) => update({ comment: event.target.value })}
+          placeholder="Add nuance, edge cases, or rationale for discussion."
+        />
+      </label>
+
+      <label className="discussion-toggle">
+        <input
+          type="checkbox"
+          checked={state.marked_for_discussion}
+          onChange={(event) => update({ marked_for_discussion: event.target.checked })}
+        />
+        <span>Mark for discussion in the follow-up round</span>
+      </label>
+    </aside>
+  );
+}
