@@ -7,12 +7,6 @@ const copy: Record<string, string> = {
   Diagnostic: "Assess cases centered on diagnostic reasoning, interpretation, and uncertainty."
 };
 
-const accents: Record<string, string> = {
-  Management: "Clinical operations",
-  Communication: "Care delivery",
-  Diagnostic: "Clinical reasoning"
-};
-
 export function SectionCards({ sections }: { sections: SectionWithProgress[] }) {
   return (
     <div className="section-grid">
@@ -25,7 +19,6 @@ export function SectionCards({ sections }: { sections: SectionWithProgress[] }) 
             <div key={section.id} className="section-card locked">
               <div className="eyebrow">Section</div>
               <h3>{section.name}</h3>
-              <span className="section-tag">{accents[section.name] ?? "Review set"}</span>
               <p>{copy[section.name] ?? section.description ?? "Open this section to start reviewing cases."}</p>
               <div className="section-progress">
                 <div className="section-progress-labels">
@@ -45,7 +38,6 @@ export function SectionCards({ sections }: { sections: SectionWithProgress[] }) 
           <Link key={section.id} href={`/sections/${section.slug}`} className="section-card">
             <div className="eyebrow">Section</div>
             <h3>{section.name}</h3>
-            <span className="section-tag">{accents[section.name] ?? "Review set"}</span>
             <p>{copy[section.name] ?? section.description ?? "Open this section to start reviewing cases."}</p>
             <div className="section-progress">
               <div className="section-progress-labels">
