@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -52,20 +53,28 @@ function selectionLabel(value: number | null) {
 
 export function ReviewPanel({
   caseId,
-  initial
+  initial,
+  previousHref,
+  nextHref,
+  mergeReviewHref
 }: {
   caseId: string;
   initial: RatingState;
+  previousHref: string | null;
+  nextHref: string | null;
+  mergeReviewHref: string | null;
 }) {
   const [state, setState] = useState<RatingState>(initial);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const debounceRef = useRef<number | null>(null);
+  const panelRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     setState(initial);
     setSavedAt(null);
     setStatus("idle");
+    panelRef.current?.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   }, [caseId, initial]);
 
   const isCompleted = useMemo(() => {
@@ -116,7 +125,7 @@ export function ReviewPanel({
   }
 
   return (
-    <aside className="review-scoring-panel">
+    <aside ref={panelRef} className="review-scoring-panel">
       <div className="panel-header">
         <div>
           <div className="eyebrow">Structured rating</div>
@@ -129,6 +138,40 @@ export function ReviewPanel({
         <strong>{isCompleted ? "Completed" : "In progress"}</strong>
         <span>{answeredCount} of 4 scales answered</span>
         <span>{isCompleted ? "Case complete. You can move to the next case or revise any score." : "A case is complete when all four ratings are selected."}</span>
+      </div>
+
+      <div className="panel-nav-actions">
+        {previousHref ? (
+          <Link className="ghost-button" href={previousHref}>
+            Previous case
+          </Link>
+        ) : (
+          <span />
+        )}
+
+        {nextHref ? (
+          isCompleted ? (
+            <Link className="primary-button" href={nextHref}>
+              Next case
+            </Link>
+          ) : (
+            <div className="panel-next-blocked">
+              <span className="primary-button button-disabled">Next case</span>
+              <span className="case-nav-hint">Complete all four scores before moving on.</span>
+            </div>
+          )
+        ) : mergeReviewHref ? (
+          isCompleted ? (
+            <Link className="primary-button" href={mergeReviewHref}>
+              Section merge review
+            </Link>
+          ) : (
+            <div className="panel-next-blocked">
+              <span className="primary-button button-disabled">Section merge review</span>
+              <span className="case-nav-hint">Complete all four scores before moving on.</span>
+            </div>
+          )
+        ) : null}
       </div>
 
       {questions.map((question) => (

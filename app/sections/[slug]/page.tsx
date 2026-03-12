@@ -101,15 +101,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
                 Previous case
               </Link>
             ) : <span />}
-            {nextCase ? (
-              <Link className="primary-button" href={`/sections/${slug}?case=${nextCase.id}`}>
-                Next case
-              </Link>
-            ) : sectionComplete ? (
-              <Link className="primary-button" href={`/sections/${slug}/merge-review`}>
-                Section merge review
-              </Link>
-            ) : null}
+            <span />
           </div>
         </main>
 
@@ -123,6 +115,9 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
             comment: activeRating?.comment ?? "",
             marked_for_discussion: activeRating?.marked_for_discussion ?? false
           }}
+          previousHref={previousCase ? `/sections/${slug}?case=${previousCase.id}` : null}
+          nextHref={nextCase ? `/sections/${slug}?case=${nextCase.id}` : null}
+          mergeReviewHref={!nextCase && sectionComplete ? `/sections/${slug}/merge-review` : null}
         />
       </div>
     </>

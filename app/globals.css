@@ -85,6 +85,9 @@ textarea {
 
 .ghost-button,
 .primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 999px;
   padding: 11px 16px;
   border: 1px solid var(--border);
@@ -115,6 +118,14 @@ textarea {
 
 .primary-button:hover {
   background: var(--accent-light);
+}
+
+.button-disabled {
+  background: rgba(71, 85, 105, 0.28);
+  border-color: rgba(71, 85, 105, 0.55);
+  color: rgba(226, 232, 240, 0.72);
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .hero {
@@ -563,6 +574,28 @@ textarea {
   display: grid;
   gap: 4px;
   background: linear-gradient(180deg, rgba(26, 18, 18, 0.9), rgba(17, 24, 39, 0.92));
+}
+
+.panel-nav-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.panel-next-blocked {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+}
+
+.case-nav-hint {
+  max-width: 220px;
+  text-align: right;
+  font-size: 0.77rem;
+  line-height: 1.4;
+  color: #fca5a5;
 }
 
 .progress-labels {
