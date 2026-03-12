@@ -20,6 +20,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     "use server";
 
     const email = String(formData.get("email") || "").trim();
+    const displayName = String(formData.get("displayName") || "").trim();
+    const affiliationTitle = String(formData.get("affiliationTitle") || "").trim();
     const redirectTo = String(formData.get("redirectTo") || "/");
     const supabase = await createClient();
     const origin = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
@@ -27,6 +29,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     await supabase.auth.signInWithOtp({
       email,
       options: {
+        data: {
+          display_name: displayName,
+          affiliation_title: affiliationTitle
+        },
         emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`
       }
     });
@@ -36,10 +42,18 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     <div className="login-wrap">
       <div className="login-panel">
         <div className="eyebrow">Authentication</div>
-        <h2>Email login</h2>
-        <p>Enter your email address to receive a secure sign-in link. Your case progress and partial ratings persist automatically.</p>
+        <h2>Reviewer login</h2>
+        <p>Enter your reviewer details to receive a secure sign-in link. Your case progress and partial ratings persist automatically.</p>
         <form action={signIn}>
           <input type="hidden" name="redirectTo" value={params.redirectTo || "/"} />
+          <label className="field-block">
+            <span>Reviewer name</span>
+            <input type="text" name="displayName" required placeholder="Jane Smith" />
+          </label>
+          <label className="field-block">
+            <span>Institution / title</span>
+            <input type="text" name="affiliationTitle" required placeholder="Stanford Medicine, Emergency Physician" />
+          </label>
           <label className="field-block">
             <span>Email address</span>
             <input type="email" name="email" required placeholder="you@example.org" />

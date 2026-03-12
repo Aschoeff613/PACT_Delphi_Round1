@@ -17,6 +17,13 @@ export default async function RootLayout({
   const {
     data: { user }
   } = await supabase.auth.getUser();
+  const profile = user
+    ? await supabase
+        .from("profiles")
+        .select("display_name, affiliation_title")
+        .eq("id", user.id)
+        .maybeSingle()
+    : { data: null };
 
   return (
     <html lang="en">
@@ -28,6 +35,8 @@ export default async function RootLayout({
               <p>Structured rating workspace for management, communication, and diagnostic case review.</p>
             </div>
             <div className="topbar-actions">
+              {profile.data?.display_name ? <span className="hint">{profile.data.display_name}</span> : null}
+              {profile.data?.affiliation_title ? <span className="hint">{profile.data.affiliation_title}</span> : null}
               {user?.email ? <span className="hint">{user.email}</span> : null}
               {user ? (
                 <a className="ghost-button compact-button" href="/">
