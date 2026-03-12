@@ -1,34 +1,52 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { getReviewerSession } from "@/lib/reviewer-session";
+import { caseStatus } from "@/lib/utils";
 
 export default async function AdminPage() {
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const session = await getReviewerSession();
 
-  if (!user) redirect("/login?redirectTo=/admin");
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "admin") {
+  if (!session) redirect("/login?redirectTo=/admin");
+  if (session.reviewer.role !== "admin") {
     redirect("/");
   }
 
   const admin = createAdminClient();
-  const [{ count: ratingsCount }, { count: completedCount }, { count: sectionCount }] = await Promise.all([
-    admin.from("ratings").select("*", { count: "exact", head: true }),
-    admin.from("ratings").select("*", { count: "exact", head: true }).not("completed_at", "is", null),
-    admin.from("sections").select("*", { count: "exact", head: true })
+  const [{ data: reviewers }, { data: sections }, { data: cases }, { data: ratings }] = await Promise.all([
+    admin.from("reviewers").select("id"),
+    admin.from("sections").select("id, name"),
+    admin.from("cases").select("id, section_id"),
+    admin.from("ratings").select("reviewer_id, case_id, risk_severity, cognitive_complexity, performance_variability, ai_relevance, completed_at")
   ]);
 
-  const { data: sectionStatusRows } = await admin.rpc("section_completion_summary");
+  const ratingsCount = (ratings ?? []).length;
+  const completedCount = (ratings ?? []).filter((row) => row.completed_at !== null).length;
+  const sectionCount = (sections ?? []).length;
+  const ratingsByReviewerCase = new Map((ratings ?? []).map((row) => [`${row.reviewer_id}:${row.case_id}`, row]));
+  const sectionStatusRows = (sections ?? []).map((section) => {
+    const sectionCases = (cases ?? []).filter((item) => item.section_id === section.id);
+    let notStartedCount = 0;
+    let inProgressCount = 0;
+    let completedCaseCount = 0;
+
+    for (const reviewer of reviewers ?? []) {
+      for (const sectionCase of sectionCases) {
+        const rating = ratingsByReviewerCase.get(`${reviewer.id}:${sectionCase.id}`);
+        const status = caseStatus(rating ?? null);
+        if (status === "not_started") notStartedCount += 1;
+        if (status === "in_progress") inProgressCount += 1;
+        if (status === "completed") completedCaseCount += 1;
+      }
+    }
+
+    return {
+      section_name: section.name,
+      not_started_count: notStartedCount,
+      in_progress_count: inProgressCount,
+      completed_count: completedCaseCount
+    };
+  });
 
   return (
     <div className="admin-panel">

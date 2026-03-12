@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getReviewerSession } from "@/lib/reviewer-session";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 type Payload = {
   caseId: string;
@@ -12,13 +13,13 @@ type Payload = {
 };
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const session = await getReviewerSession();
 
-  if (!user) {
+  if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (session.reviewer.locked_at) {
+    return NextResponse.json({ error: "Reviewer is locked" }, { status: 403 });
   }
 
   const payload = (await request.json()) as Payload;
@@ -29,9 +30,10 @@ export async function POST(request: Request) {
     payload.ai_relevance
   ].every((value) => value !== null);
 
+  const supabase = createAdminClient();
   const { error } = await supabase.from("ratings").upsert(
     {
-      user_id: user.id,
+      reviewer_id: session.reviewer.id,
       case_id: payload.caseId,
       risk_severity: payload.risk_severity,
       cognitive_complexity: payload.cognitive_complexity,
@@ -41,7 +43,7 @@ export async function POST(request: Request) {
       marked_for_discussion: payload.marked_for_discussion,
       completed_at: isComplete ? new Date().toISOString() : null
     },
-    { onConflict: "user_id,case_id" }
+    { onConflict: "reviewer_id,case_id" }
   );
 
   if (error) {

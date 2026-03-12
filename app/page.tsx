@@ -1,17 +1,17 @@
 import { redirect } from "next/navigation";
 import { SectionCards } from "@/components/section-cards";
 import { buildSectionProgress } from "@/lib/review-flow";
-import { createClient } from "@/lib/supabase/server";
+import { getReviewerSession } from "@/lib/reviewer-session";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export default async function HomePage() {
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const session = await getReviewerSession();
 
-  if (!user) {
+  if (!session) {
     redirect("/login");
   }
+
+  const supabase = createAdminClient();
 
   const { data: sections } = await supabase
     .from("sections")
@@ -25,7 +25,7 @@ export default async function HomePage() {
   const { data: ratings } = await supabase
     .from("ratings")
     .select("case_id, risk_severity, cognitive_complexity, performance_variability, ai_relevance")
-    .eq("user_id", user.id);
+    .eq("reviewer_id", session.reviewer.id);
 
   const sectionsWithProgress = buildSectionProgress(sections ?? [], cases ?? [], ratings ?? []);
 

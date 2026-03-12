@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { createClient } from "@/lib/supabase/server";
 import { AuthSignOut } from "@/components/auth-signout";
+import { getReviewerSession } from "@/lib/reviewer-session";
 
 export const metadata: Metadata = {
   title: "Expert Case Review",
@@ -13,17 +13,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-  const profile = user
-    ? await supabase
-        .from("profiles")
-        .select("display_name, affiliation_title, institution, title")
-        .eq("id", user.id)
-        .maybeSingle()
-    : { data: null };
+  const session = await getReviewerSession();
+  const reviewer = session?.reviewer ?? null;
 
   return (
     <html lang="en">
@@ -35,17 +26,16 @@ export default async function RootLayout({
               <p>Structured rating workspace for management, communication, and diagnostic case review.</p>
             </div>
             <div className="topbar-actions">
-              {profile.data?.display_name ? <span className="hint">{profile.data.display_name}</span> : null}
-              {profile.data?.institution ? <span className="hint">{profile.data.institution}</span> : null}
-              {profile.data?.title ? <span className="hint">{profile.data.title}</span> : null}
-              {!profile.data?.institution && !profile.data?.title && profile.data?.affiliation_title ? <span className="hint">{profile.data.affiliation_title}</span> : null}
-              {user?.email ? <span className="hint">{user.email}</span> : null}
-              {user ? (
+              {reviewer?.display_name ? <span className="hint">{reviewer.display_name}</span> : null}
+              {reviewer?.institution ? <span className="hint">{reviewer.institution}</span> : null}
+              {reviewer?.title ? <span className="hint">{reviewer.title}</span> : null}
+              {reviewer?.code ? <span className="hint">{reviewer.code}</span> : null}
+              {reviewer ? (
                 <a className="ghost-button compact-button" href="/">
                   Sections
                 </a>
               ) : null}
-              {user ? <AuthSignOut /> : null}
+              {reviewer ? <AuthSignOut /> : null}
             </div>
           </header>
           {children}

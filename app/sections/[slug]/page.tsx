@@ -4,8 +4,9 @@ import { ReviewPanel } from "@/components/review-panel";
 import { ReviewProgress } from "@/components/review-progress";
 import { ReviewSidebar } from "@/components/review-sidebar";
 import { buildSectionProgress } from "@/lib/review-flow";
+import { getReviewerSession } from "@/lib/reviewer-session";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { caseStatus, completionCount } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/server";
 
 type SectionPageProps = {
   params: Promise<{ slug: string }>;
@@ -15,14 +16,13 @@ type SectionPageProps = {
 export default async function SectionPage({ params, searchParams }: SectionPageProps) {
   const { slug } = await params;
   const query = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const session = await getReviewerSession();
 
-  if (!user) {
+  if (!session) {
     redirect(`/login?redirectTo=/sections/${slug}`);
   }
+
+  const supabase = createAdminClient();
 
   const [{ data: sections }, { data: allCases }, { data: allRatings }] = await Promise.all([
     supabase.from("sections").select("id, name, slug, description"),
@@ -30,7 +30,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
     supabase
       .from("ratings")
       .select("id, case_id, risk_severity, cognitive_complexity, performance_variability, ai_relevance, comment, marked_for_discussion")
-      .eq("user_id", user.id)
+      .eq("reviewer_id", session.reviewer.id)
   ]);
 
   const section = (sections ?? []).find((item) => item.slug === slug);

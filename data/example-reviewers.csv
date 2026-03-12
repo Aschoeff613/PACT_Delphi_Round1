@@ -1,0 +1,4 @@
+code,display_name,institution,title,role
+PACT-001,Reviewer One,Stanford Medicine,Emergency Physician,reviewer
+PACT-002,Reviewer Two,Beth Israel Deaconess Medical Center,Hospitalist,reviewer
+PACT-ADMIN,Study Admin,Stanford Medicine,Principal Investigator,admin

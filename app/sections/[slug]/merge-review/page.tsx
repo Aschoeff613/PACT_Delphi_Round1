@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { MergeReviewForm } from "@/components/merge-review-form";
 import { SECTION_ORDER, buildSectionProgress } from "@/lib/review-flow";
-import { createClient } from "@/lib/supabase/server";
+import { getReviewerSession } from "@/lib/reviewer-session";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 type MergeReviewPageProps = {
   params: Promise<{ slug: string }>;
@@ -10,14 +11,13 @@ type MergeReviewPageProps = {
 
 export default async function MergeReviewPage({ params }: MergeReviewPageProps) {
   const { slug } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const session = await getReviewerSession();
 
-  if (!user) {
+  if (!session) {
     redirect(`/login?redirectTo=/sections/${slug}/merge-review`);
   }
+
+  const supabase = createAdminClient();
 
   const [{ data: sections }, { data: cases }, { data: ratings }] = await Promise.all([
     supabase.from("sections").select("id, slug, name, description"),
@@ -25,7 +25,7 @@ export default async function MergeReviewPage({ params }: MergeReviewPageProps) 
     supabase
       .from("ratings")
       .select("case_id, risk_severity, cognitive_complexity, performance_variability, ai_relevance")
-      .eq("user_id", user.id)
+      .eq("reviewer_id", session.reviewer.id)
   ]);
 
   const sectionsWithProgress = buildSectionProgress(sections ?? [], cases ?? [], ratings ?? []);
@@ -43,13 +43,13 @@ export default async function MergeReviewPage({ params }: MergeReviewPageProps) 
     supabase
       .from("post_review_feedback")
       .select("merge_notes")
-      .eq("user_id", user.id)
+      .eq("reviewer_id", session.reviewer.id)
       .eq("section_id", rawSection.id)
       .maybeSingle(),
     supabase
       .from("case_merge_feedback")
       .select("source_case_id, decision, target_case_id")
-      .eq("user_id", user.id)
+      .eq("reviewer_id", session.reviewer.id)
       .eq("section_id", rawSection.id)
   ]);
 

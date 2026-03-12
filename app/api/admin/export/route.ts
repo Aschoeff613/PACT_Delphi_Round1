@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { getReviewerSession } from "@/lib/reviewer-session";
 
 function csvCell(value: unknown) {
   const stringValue = value === null || value === undefined ? "" : String(value);
@@ -8,22 +8,12 @@ function csvCell(value: unknown) {
 }
 
 export async function GET() {
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const session = await getReviewerSession();
 
-  if (!user) {
+  if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "admin") {
+  if (session.reviewer.role !== "admin") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -32,7 +22,7 @@ export async function GET() {
     .from("ratings")
     .select(`
       id,
-      user_id,
+      reviewer_id,
       case_id,
       risk_severity,
       cognitive_complexity,
@@ -43,7 +33,7 @@ export async function GET() {
       completed_at,
       updated_at,
       cases(title, section_id),
-      profiles!ratings_user_id_fkey(email, display_name)
+      reviewers!ratings_reviewer_id_fkey(code, display_name, institution, title)
     `);
 
   if (error) {
@@ -52,9 +42,11 @@ export async function GET() {
 
   const headers = [
     "rating_id",
-    "user_id",
-    "email",
+    "reviewer_id",
+    "reviewer_code",
     "display_name",
+    "institution",
+    "title",
     "case_id",
     "case_title",
     "section_id",
@@ -70,9 +62,11 @@ export async function GET() {
 
   const rows = (data ?? []).map((row: any) => [
     row.id,
-    row.user_id,
-    row.profiles?.email ?? "",
-    row.profiles?.display_name ?? "",
+    row.reviewer_id,
+    row.reviewers?.code ?? "",
+    row.reviewers?.display_name ?? "",
+    row.reviewers?.institution ?? "",
+    row.reviewers?.title ?? "",
     row.case_id,
     row.cases?.title ?? "",
     row.cases?.section_id ?? "",

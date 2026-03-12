@@ -1,11 +1,10 @@
 # Expert Case Review
 
-Structured expert case rating app for a modified Delphi-style exercise.
+Structured expert case rating app for a modified Delphi-style exercise using reviewer codes instead of email magic links.
 
 ## Stack
 
 - Next.js (App Router)
-- Supabase Auth
 - Supabase Postgres
 - Vercel deploy target
 
@@ -30,7 +29,7 @@ supabase/migrations/
 
 ## Features scaffolded
 
-- Email magic-link login
+- Reviewer code login with secure cookie session
 - Three review sections: Management, Communication, Diagnostic
 - Sticky left case navigation
 - Center case review panel
@@ -48,22 +47,24 @@ Copy `.env.example` to `.env.local` and set:
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
-
-`NEXT_PUBLIC_SITE_URL` should be your local dev URL or your deployed Vercel URL.
 
 ## Supabase setup
 
 1. Create a Supabase project.
-2. Enable Email auth / magic links in Supabase Auth.
-3. Run the SQL in `supabase/migrations/001_init.sql`.
-4. Optionally mark one profile as admin:
+2. Run the SQL in `supabase/migrations/001_init.sql` through `supabase/migrations/007_reviewer_code_auth.sql`.
+3. Seed reviewer codes:
+
+```bash
+npm run seed:reviewers -- data/example-reviewers.csv
+```
+
+4. Optionally mark one reviewer as admin:
 
 ```sql
-update public.profiles
+update public.reviewers
 set role = 'admin'
-where email = 'you@example.org';
+where code = 'PACT-ADMIN';
 ```
 
 ## Local development
@@ -92,6 +93,7 @@ Example seed file:
 
 - `data/example-cases.json`
 - `data/high-risk-cognitive-tasks-seed-draft.json`
+- `data/example-reviewers.csv`
 
 Seed from JSON:
 
@@ -111,7 +113,7 @@ Seed from CSV:
 npm run seed:cases -- your-file.csv
 ```
 
-Expected CSV columns:
+Expected case CSV columns:
 
 - `section`
 - `title`
@@ -119,17 +121,26 @@ Expected CSV columns:
 - `task_definition`
 - `order_index`
 
+Expected reviewer CSV columns:
+
+- `code`
+- `display_name`
+- `institution`
+- `title`
+- `role`
+
 ## Deploying to Vercel
 
 1. Push the repo to GitHub.
 2. Import it into Vercel.
 3. Add the same environment variables in Vercel.
-4. Set `NEXT_PUBLIC_SITE_URL` to your Vercel domain.
-5. Deploy.
+4. Deploy.
 
 ## Notes
 
 - Ratings use `NULL` for unanswered questions.
 - A case is completed only when all four Likert values are present.
 - `completed_at` is set automatically when all four values are filled.
+- Reviewer access is controlled by pre-issued codes in `public.reviewers`.
+- Reviewer sessions are stored in `public.reviewer_sessions`.
 - The current scaffold is optimized for desktop but remains responsive on narrower screens.

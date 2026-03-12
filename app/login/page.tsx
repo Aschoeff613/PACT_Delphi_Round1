@@ -1,57 +1,54 @@
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { createReviewerSession, getReviewerSession, normalizeReviewerCode } from "@/lib/reviewer-session";
 
 type LoginPageProps = {
-  searchParams: Promise<{ redirectTo?: string }>;
+  searchParams: Promise<{ redirectTo?: string; error?: string }>;
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const session = await getReviewerSession();
 
-  if (user) {
+  if (session) {
     redirect(params.redirectTo || "/");
   }
 
   async function signIn(formData: FormData) {
     "use server";
 
-    const email = String(formData.get("email") || "").trim();
-    const displayName = String(formData.get("displayName") || "").trim();
-    const institution = String(formData.get("institution") || "").trim();
-    const title = String(formData.get("title") || "").trim();
+    const code = normalizeReviewerCode(String(formData.get("code") || ""));
     const redirectTo = String(formData.get("redirectTo") || "/");
-    const headerStore = await headers();
-    const forwardedProto = headerStore.get("x-forwarded-proto") ?? "http";
-    const forwardedHost = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
-    const supabase = await createClient();
-    const requestOrigin = forwardedHost ? `${forwardedProto}://${forwardedHost}` : "";
-    const origin = requestOrigin || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    const admin = createAdminClient();
+    const { data: reviewer } = await admin
+      .from("reviewers")
+      .select("id, locked_at")
+      .eq("code", code)
+      .maybeSingle();
 
-    await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        data: {
-          display_name: displayName,
-          affiliation_title: [institution, title].filter(Boolean).join(", "),
-          institution,
-          title
-        },
-        emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`
-      }
-    });
+    if (!reviewer) {
+      redirect(`/login?error=invalid_code&redirectTo=${encodeURIComponent(redirectTo)}`);
+    }
+
+    if (reviewer.locked_at) {
+      redirect(`/login?error=locked&redirectTo=${encodeURIComponent(redirectTo)}`);
+    }
+
+    await admin
+      .from("reviewers")
+      .update({ last_login_at: new Date().toISOString() })
+      .eq("id", reviewer.id);
+
+    await createReviewerSession(reviewer.id);
+    redirect(redirectTo);
   }
 
   return (
     <div className="login-wrap">
       <div className="login-panel">
         <div className="eyebrow">Authentication</div>
-        <h2>Reviewer login</h2>
-        <p>Enter your reviewer details to receive a secure sign-in link. Your case progress and partial ratings persist automatically.</p>
+        <h2>Reviewer code login</h2>
+        <p>Enter your assigned reviewer code to resume your saved progress. Keep the same code for later rounds.</p>
         <div className="consent-panel">
           <p>
             This survey is part of the PACT project (Physician-AI Collaboration Teaming), an ARPA-H funded collaboration between Stanford University and Beth Israel Deaconess Medical Center.
@@ -62,27 +59,17 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             Participation is voluntary and you may stop at any time.
           </p>
           <p>Questions? Contact Austin Schoeffler at austin_schoeffler@stanford.edu.</p>
-          <p><strong>By clicking "Send magic link" you confirm that you have read this information and consent to participate.</strong></p>
+          <p><strong>By continuing you confirm that you have read this information and consent to participate.</strong></p>
         </div>
+        {params.error === "invalid_code" ? <p className="error-banner">That reviewer code was not recognized.</p> : null}
+        {params.error === "locked" ? <p className="error-banner">This reviewer code has already been locked and can no longer be used.</p> : null}
         <form action={signIn}>
           <input type="hidden" name="redirectTo" value={params.redirectTo || "/"} />
           <label className="field-block">
-            <span>Reviewer name</span>
-            <input type="text" name="displayName" required placeholder="Jane Smith" />
+            <span>Reviewer code</span>
+            <input type="text" name="code" required placeholder="PACT-001" autoCapitalize="characters" autoCorrect="off" />
           </label>
-          <label className="field-block">
-            <span>Institution</span>
-            <input type="text" name="institution" required placeholder="Stanford Medicine" />
-          </label>
-          <label className="field-block">
-            <span>Title</span>
-            <input type="text" name="title" required placeholder="Emergency Physician" />
-          </label>
-          <label className="field-block">
-            <span>Email address</span>
-            <input type="email" name="email" required placeholder="you@example.org" />
-          </label>
-          <button className="primary-button" type="submit">Send magic link</button>
+          <button className="primary-button" type="submit">Continue</button>
         </form>
       </div>
     </div>

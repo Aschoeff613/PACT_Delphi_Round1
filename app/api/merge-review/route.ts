@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getReviewerSession } from "@/lib/reviewer-session";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 type MergeSelection = {
   source_case_id: string;
@@ -14,16 +15,17 @@ type Payload = {
 };
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const session = await getReviewerSession();
 
-  if (!user) {
+  if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (session.reviewer.locked_at) {
+    return NextResponse.json({ error: "Reviewer is locked" }, { status: 403 });
   }
 
   const payload = (await request.json()) as Payload;
+  const supabase = createAdminClient();
   const { data: section } = await supabase
     .from("sections")
     .select("id")
@@ -35,7 +37,7 @@ export async function POST(request: Request) {
   }
 
   const mergeRows = payload.selections.map((item) => ({
-    user_id: user.id,
+    reviewer_id: session.reviewer.id,
     section_id: section.id,
     source_case_id: item.source_case_id,
     decision: item.decision,
@@ -44,7 +46,7 @@ export async function POST(request: Request) {
 
   const { error: mergeError } = await supabase
     .from("case_merge_feedback")
-    .upsert(mergeRows, { onConflict: "user_id,source_case_id" });
+    .upsert(mergeRows, { onConflict: "reviewer_id,source_case_id" });
 
   if (mergeError) {
     return NextResponse.json({ error: mergeError.message }, { status: 500 });
@@ -52,11 +54,11 @@ export async function POST(request: Request) {
 
   const { error: noteError } = await supabase.from("post_review_feedback").upsert(
     {
-      user_id: user.id,
+      reviewer_id: session.reviewer.id,
       section_id: section.id,
       merge_notes: payload.notes || null
     },
-    { onConflict: "user_id,section_id" }
+    { onConflict: "reviewer_id,section_id" }
   );
 
   if (noteError) {

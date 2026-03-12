@@ -10,6 +10,16 @@ export type Profile = {
   role: "reviewer" | "admin";
 };
 
+export type Reviewer = {
+  id: string;
+  code: string;
+  display_name: string;
+  institution: string | null;
+  title: string | null;
+  role: "reviewer" | "admin";
+  locked_at: string | null;
+};
+
 export type Section = {
   id: string;
   slug: string;
@@ -37,7 +47,8 @@ export type CaseRecord = {
 
 export type Rating = {
   id: string;
-  user_id: string;
+  user_id: string | null;
+  reviewer_id: string | null;
   case_id: string;
   risk_severity: number | null;
   cognitive_complexity: number | null;

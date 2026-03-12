@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed:cases": "node scripts/seed-cases.mjs"
+    "seed:cases": "node scripts/seed-cases.mjs",
+    "seed:reviewers": "node scripts/seed-reviewers.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",
