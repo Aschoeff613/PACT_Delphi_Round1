@@ -20,7 +20,7 @@ export default async function RootLayout({
   const profile = user
     ? await supabase
         .from("profiles")
-        .select("display_name, affiliation_title")
+        .select("display_name, affiliation_title, institution, title")
         .eq("id", user.id)
         .maybeSingle()
     : { data: null };
@@ -36,7 +36,9 @@ export default async function RootLayout({
             </div>
             <div className="topbar-actions">
               {profile.data?.display_name ? <span className="hint">{profile.data.display_name}</span> : null}
-              {profile.data?.affiliation_title ? <span className="hint">{profile.data.affiliation_title}</span> : null}
+              {profile.data?.institution ? <span className="hint">{profile.data.institution}</span> : null}
+              {profile.data?.title ? <span className="hint">{profile.data.title}</span> : null}
+              {!profile.data?.institution && !profile.data?.title && profile.data?.affiliation_title ? <span className="hint">{profile.data.affiliation_title}</span> : null}
               {user?.email ? <span className="hint">{user.email}</span> : null}
               {user ? (
                 <a className="ghost-button compact-button" href="/">

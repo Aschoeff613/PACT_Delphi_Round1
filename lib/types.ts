@@ -5,6 +5,8 @@ export type Profile = {
   email: string;
   display_name: string | null;
   affiliation_title: string | null;
+  institution: string | null;
+  title: string | null;
   role: "reviewer" | "admin";
 };
 

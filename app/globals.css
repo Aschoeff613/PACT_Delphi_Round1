@@ -802,6 +802,28 @@ textarea {
   padding: 28px;
 }
 
+.consent-panel {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(36, 48, 65, 0.75);
+  background: rgba(12, 18, 31, 0.72);
+}
+
+.consent-panel p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.consent-panel p + p {
+  margin-top: 12px;
+}
+
+.consent-panel strong {
+  color: var(--ink);
+}
+
 .login-panel form {
   display: grid;
   gap: 14px;
