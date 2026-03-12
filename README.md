@@ -1,6 +1,6 @@
 # Expert Case Review
 
-Structured expert case rating app for a modified Delphi-style exercise using reviewer codes instead of email magic links.
+Structured expert case rating app for a modified Delphi-style exercise using self-chosen reviewer codes instead of email magic links.
 
 ## Stack
 
@@ -29,7 +29,7 @@ supabase/migrations/
 
 ## Features scaffolded
 
-- Reviewer code login with secure cookie session
+- Reviewer code registration/login with secure cookie session
 - Three review sections: Management, Communication, Diagnostic
 - Sticky left case navigation
 - Center case review panel
@@ -53,18 +53,12 @@ SUPABASE_SERVICE_ROLE_KEY=...
 
 1. Create a Supabase project.
 2. Run the SQL in `supabase/migrations/001_init.sql` through `supabase/migrations/007_reviewer_code_auth.sql`.
-3. Seed reviewer codes:
-
-```bash
-npm run seed:reviewers -- data/example-reviewers.csv
-```
-
-4. Optionally mark one reviewer as admin:
+3. Optionally mark one reviewer as admin after they self-register:
 
 ```sql
 update public.reviewers
 set role = 'admin'
-where code = 'PACT-ADMIN';
+where code = 'YOUR-CODE';
 ```
 
 ## Local development
@@ -93,7 +87,6 @@ Example seed file:
 
 - `data/example-cases.json`
 - `data/high-risk-cognitive-tasks-seed-draft.json`
-- `data/example-reviewers.csv`
 
 Seed from JSON:
 
@@ -121,14 +114,6 @@ Expected case CSV columns:
 - `task_definition`
 - `order_index`
 
-Expected reviewer CSV columns:
-
-- `code`
-- `display_name`
-- `institution`
-- `title`
-- `role`
-
 ## Deploying to Vercel
 
 1. Push the repo to GitHub.
@@ -141,6 +126,6 @@ Expected reviewer CSV columns:
 - Ratings use `NULL` for unanswered questions.
 - A case is completed only when all four Likert values are present.
 - `completed_at` is set automatically when all four values are filled.
-- Reviewer access is controlled by pre-issued codes in `public.reviewers`.
+- Reviewer access is controlled by self-chosen codes plus last-name verification in `public.reviewers`.
 - Reviewer sessions are stored in `public.reviewer_sessions`.
 - The current scaffold is optimized for desktop but remains responsive on narrower screens.

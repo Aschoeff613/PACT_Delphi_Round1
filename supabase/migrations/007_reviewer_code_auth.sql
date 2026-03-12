@@ -2,6 +2,8 @@ create table if not exists public.reviewers (
   id uuid primary key default gen_random_uuid(),
   code text not null unique,
   display_name text not null,
+  last_name text not null default '',
+  email text,
   institution text,
   title text,
   role text not null default 'reviewer' check (role in ('reviewer', 'admin')),

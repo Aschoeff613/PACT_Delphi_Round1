@@ -33,7 +33,7 @@ export async function GET() {
       completed_at,
       updated_at,
       cases(title, section_id),
-      reviewers!ratings_reviewer_id_fkey(code, display_name, institution, title)
+      reviewers!ratings_reviewer_id_fkey(code, display_name, last_name, email, institution, title)
     `);
 
   if (error) {
@@ -45,6 +45,8 @@ export async function GET() {
     "reviewer_id",
     "reviewer_code",
     "display_name",
+    "last_name",
+    "email",
     "institution",
     "title",
     "case_id",
@@ -65,6 +67,8 @@ export async function GET() {
     row.reviewer_id,
     row.reviewers?.code ?? "",
     row.reviewers?.display_name ?? "",
+    row.reviewers?.last_name ?? "",
+    row.reviewers?.email ?? "",
     row.reviewers?.institution ?? "",
     row.reviewers?.title ?? "",
     row.case_id,

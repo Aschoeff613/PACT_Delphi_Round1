@@ -9,6 +9,8 @@ export type Reviewer = {
   id: string;
   code: string;
   display_name: string;
+  last_name: string;
+  email: string | null;
   institution: string | null;
   title: string | null;
   role: "reviewer" | "admin";
@@ -55,6 +57,8 @@ export async function getReviewerSession() {
         id,
         code,
         display_name,
+        last_name,
+        email,
         institution,
         title,
         role,
