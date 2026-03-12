@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -7,6 +8,12 @@ type LoginPageProps = {
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
+  const headerStore = await headers();
+  const forwardedProto = headerStore.get("x-forwarded-proto") ?? "http";
+  const forwardedHost = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
+  const requestOrigin = forwardedHost
+    ? `${forwardedProto}://${forwardedHost}`
+    : process.env.NEXT_PUBLIC_SITE_URL;
   const supabase = await createClient();
   const {
     data: { user }
@@ -24,8 +31,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     const institution = String(formData.get("institution") || "").trim();
     const title = String(formData.get("title") || "").trim();
     const redirectTo = String(formData.get("redirectTo") || "/");
+    const requestOrigin = String(formData.get("requestOrigin") || "").trim();
     const supabase = await createClient();
-    const origin = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    const origin = requestOrigin || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
     await supabase.auth.signInWithOtp({
       email,
@@ -61,6 +69,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </div>
         <form action={signIn}>
           <input type="hidden" name="redirectTo" value={params.redirectTo || "/"} />
+          <input type="hidden" name="requestOrigin" value={requestOrigin ?? ""} />
           <label className="field-block">
             <span>Reviewer name</span>
             <input type="text" name="displayName" required placeholder="Jane Smith" />
