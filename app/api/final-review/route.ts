@@ -29,14 +29,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unknown section" }, { status: 400 });
   }
 
-  const { error } = await supabase.from("post_review_feedback").upsert(
-    {
-      reviewer_id: session.reviewer.id,
-      section_id: section.id,
-      merge_notes: payload.merge_notes || null
-    },
-    { onConflict: "reviewer_id,section_id" }
-  );
+  const { error } = await supabase.rpc("save_reviewer_post_review_feedback", {
+    p_reviewer_id: session.reviewer.id,
+    p_section_id: section.id,
+    p_merge_notes: payload.merge_notes || null
+  });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

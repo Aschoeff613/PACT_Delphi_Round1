@@ -36,30 +36,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unknown section" }, { status: 400 });
   }
 
-  const mergeRows = payload.selections.map((item) => ({
-    reviewer_id: session.reviewer.id,
-    section_id: section.id,
-    source_case_id: item.source_case_id,
-    decision: item.decision,
-    target_case_id: item.decision === "possible_merge" ? item.target_case_id : null
-  }));
+  for (const item of payload.selections) {
+    const { error: mergeError } = await supabase.rpc("save_reviewer_merge_feedback", {
+      p_reviewer_id: session.reviewer.id,
+      p_section_id: section.id,
+      p_source_case_id: item.source_case_id,
+      p_decision: item.decision,
+      p_target_case_id: item.decision === "possible_merge" ? item.target_case_id : null
+    });
 
-  const { error: mergeError } = await supabase
-    .from("case_merge_feedback")
-    .upsert(mergeRows, { onConflict: "reviewer_id,source_case_id" });
-
-  if (mergeError) {
-    return NextResponse.json({ error: mergeError.message }, { status: 500 });
+    if (mergeError) {
+      return NextResponse.json({ error: mergeError.message }, { status: 500 });
+    }
   }
 
-  const { error: noteError } = await supabase.from("post_review_feedback").upsert(
-    {
-      reviewer_id: session.reviewer.id,
-      section_id: section.id,
-      merge_notes: payload.notes || null
-    },
-    { onConflict: "reviewer_id,section_id" }
-  );
+  const { error: noteError } = await supabase.rpc("save_reviewer_post_review_feedback", {
+    p_reviewer_id: session.reviewer.id,
+    p_section_id: section.id,
+    p_merge_notes: payload.notes || null
+  });
 
   if (noteError) {
     return NextResponse.json({ error: noteError.message }, { status: 500 });

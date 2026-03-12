@@ -31,20 +31,17 @@ export async function POST(request: Request) {
   ].every((value) => value !== null);
 
   const supabase = createAdminClient();
-  const { error } = await supabase.from("ratings").upsert(
-    {
-      reviewer_id: session.reviewer.id,
-      case_id: payload.caseId,
-      risk_severity: payload.risk_severity,
-      cognitive_complexity: payload.cognitive_complexity,
-      performance_variability: payload.performance_variability,
-      ai_relevance: payload.ai_relevance,
-      comment: payload.comment || null,
-      marked_for_discussion: payload.marked_for_discussion,
-      completed_at: isComplete ? new Date().toISOString() : null
-    },
-    { onConflict: "reviewer_id,case_id" }
-  );
+  const { error } = await supabase.rpc("save_reviewer_rating", {
+    p_reviewer_id: session.reviewer.id,
+    p_case_id: payload.caseId,
+    p_risk_severity: payload.risk_severity,
+    p_cognitive_complexity: payload.cognitive_complexity,
+    p_performance_variability: payload.performance_variability,
+    p_ai_relevance: payload.ai_relevance,
+    p_comment: payload.comment || null,
+    p_marked_for_discussion: payload.marked_for_discussion,
+    p_completed_at: isComplete ? new Date().toISOString() : null
+  });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
