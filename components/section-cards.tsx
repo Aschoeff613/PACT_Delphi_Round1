@@ -37,7 +37,7 @@ export function SectionCards({ sections }: { sections: SectionWithProgress[] }) 
 
         return (
           <div key={section.id} className={`section-card-wrapper${sectionComplete ? " section-card-complete" : ""}`}>
-            <Link href={`/sections/${section.slug}`} className="section-card">
+            <div className="section-card">
               <div className="eyebrow">Section</div>
               <h3>{section.name}</h3>
               <p>{copy[section.name] ?? section.description ?? "Open this section to start reviewing cases."}</p>
@@ -51,16 +51,14 @@ export function SectionCards({ sections }: { sections: SectionWithProgress[] }) 
                 </div>
               </div>
               <div className="section-card-actions">
-                <span className="section-cta">{sectionComplete ? "Review cases" : "Open workspace"}</span>
-                <Link
-                  href={`/sections/${section.slug}/rank/risk-severity`}
-                  className="section-rank-link"
-                  onClick={(e) => e.stopPropagation()}
-                >
+                <Link href={`/sections/${section.slug}`} className="section-cta">
+                  {sectionComplete ? "Review cases" : "Open workspace"}
+                </Link>
+                <Link href={`/sections/${section.slug}/rank/risk-severity`} className="section-rank-link">
                   Ranking view
                 </Link>
               </div>
-            </Link>
+            </div>
             {sectionComplete ? (
               <Link href={`/sections/${section.slug}/merge-review`} className="section-merge-cta">
                 Go to Merge Review →
