@@ -50,7 +50,16 @@ export function SectionCards({ sections }: { sections: SectionWithProgress[] }) 
                   <div className="section-progress-fill" style={{ width: `${section.progress.percentage}%` }} />
                 </div>
               </div>
-              <span className="section-cta">{sectionComplete ? "Review cases" : "Open workspace"}</span>
+              <div className="section-card-actions">
+                <span className="section-cta">{sectionComplete ? "Review cases" : "Open workspace"}</span>
+                <Link
+                  href={`/sections/${section.slug}/rank/risk-severity`}
+                  className="section-rank-link"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Ranking view
+                </Link>
+              </div>
             </Link>
             {sectionComplete ? (
               <Link href={`/sections/${section.slug}/merge-review`} className="section-merge-cta">
