@@ -65,7 +65,11 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
   return (
     <>
       <div className="review-progress-bar">
-        <ReviewProgress completed={completionCount(navCases)} total={navCases.length} />
+        <ReviewProgress
+          completed={completionCount(navCases)}
+          total={navCases.length}
+          mergeReviewHref={sectionComplete ? `/sections/${slug}/merge-review` : null}
+        />
       </div>
       <div className="review-layout">
         <ReviewSidebar sectionSlug={section.slug} cases={navCases} activeCaseId={activeCase.id} />

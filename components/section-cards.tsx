@@ -13,6 +13,7 @@ export function SectionCards({ sections }: { sections: SectionWithProgress[] }) 
       {sections.map((section, index) => {
         const previousSection = index > 0 ? sections[index - 1] : null;
         const lockedReason = previousSection ? `Complete ${previousSection.name} first` : "";
+        const sectionComplete = section.progress.total > 0 && section.progress.completed === section.progress.total;
 
         if (section.locked) {
           return (
@@ -35,24 +36,28 @@ export function SectionCards({ sections }: { sections: SectionWithProgress[] }) 
         }
 
         return (
-          <Link key={section.id} href={`/sections/${section.slug}`} className="section-card">
-            <div className="eyebrow">Section</div>
-            <h3>{section.name}</h3>
-            <p>{copy[section.name] ?? section.description ?? "Open this section to start reviewing cases."}</p>
-            <div className="section-progress">
-              <div className="section-progress-labels">
-                <span>{section.progress.completed} of {section.progress.total} completed</span>
-                <span>{section.progress.percentage}%</span>
+          <div key={section.id} className={`section-card-wrapper${sectionComplete ? " section-card-complete" : ""}`}>
+            <Link href={`/sections/${section.slug}`} className="section-card">
+              <div className="eyebrow">Section</div>
+              <h3>{section.name}</h3>
+              <p>{copy[section.name] ?? section.description ?? "Open this section to start reviewing cases."}</p>
+              <div className="section-progress">
+                <div className="section-progress-labels">
+                  <span>{section.progress.completed} of {section.progress.total} completed</span>
+                  <span>{section.progress.percentage}%</span>
+                </div>
+                <div className="section-progress-track">
+                  <div className="section-progress-fill" style={{ width: `${section.progress.percentage}%` }} />
+                </div>
               </div>
-              <div className="section-progress-track">
-                <div className="section-progress-fill" style={{ width: `${section.progress.percentage}%` }} />
-              </div>
-            </div>
-            {section.progress.total > 0 && section.progress.completed === section.progress.total ? (
-              <span className="section-merge-note">Merge review available</span>
+              <span className="section-cta">{sectionComplete ? "Review cases" : "Open workspace"}</span>
+            </Link>
+            {sectionComplete ? (
+              <Link href={`/sections/${section.slug}/merge-review`} className="section-merge-cta">
+                Go to Merge Review →
+              </Link>
             ) : null}
-            <span className="section-cta">Open workspace</span>
-          </Link>
+          </div>
         );
       })}
     </div>
