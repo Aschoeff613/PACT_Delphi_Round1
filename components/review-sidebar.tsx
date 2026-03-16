@@ -30,7 +30,7 @@ export function ReviewSidebar({
     <aside className="review-sidebar">
       <div className="sidebar-heading">
         <div className="eyebrow">Cases</div>
-        <h2>Case navigator</h2>
+        <h2>Cognitive tasks</h2>
         <p>{completed} completed, {inProgress} in progress</p>
       </div>
 

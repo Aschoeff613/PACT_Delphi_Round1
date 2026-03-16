@@ -154,7 +154,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                   <span>Department or title (optional)</span>
                   <input type="text" name="title" placeholder="Emergency Medicine" />
                 </label>
-                <button className="primary-button" type="submit">Generate my code</button>
+                <button className="primary-button" type="submit">Begin Review</button>
               </form>
             </section>
 

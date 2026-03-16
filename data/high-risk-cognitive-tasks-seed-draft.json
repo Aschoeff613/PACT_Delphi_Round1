@@ -15,7 +15,7 @@
         "title": "ED disposition decisions (admit vs. discharge) & PCP triage to ED decision-making",
         "scenario": "A patient with heart failure presents with dyspnea, borderline oxygen saturation, and limited outpatient support. The workup is reassuring enough that discharge is possible, but the risk of decompensation after going home is not trivial.",
         "review_scenario": "A patient with heart failure presents with dyspnea, borderline oxygen saturation, and limited outpatient support. The workup is reassuring enough that discharge is possible, but the risk of decompensation after going home is not trivial.",
-        "task_definition": "Determining appropriate level of care for patients with borderline presentations where both admission and discharge are defensible. Primary care determination of whether a patient requires emergency evaluation vs. can be safely managed outpatient with available resources. 11-56% inappropriate ED referral rate.",
+        "task_definition": "Determining appropriate level of care for patients with borderline presentations where both admission and discharge are defensible. Primary care determination of whether a patient requires emergency evaluation vs. can be safely managed outpatient with available resources.",
         "order_index": 1
       },
       {
