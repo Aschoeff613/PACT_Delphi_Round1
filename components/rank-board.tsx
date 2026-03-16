@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
-import type { DimensionSlug } from "@/app/sections/[slug]/rank/[dimension]/page";
+import type { DimensionSlug } from "@/lib/rank-dimensions";
 import { cn } from "@/lib/utils";
 
 type CaseItem = {
