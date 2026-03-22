@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +50,7 @@ export function MergeReviewForm({
     });
   }, [cases, initialSelections]);
 
+  const router = useRouter();
   const [rows, setRows] = useState<RowState[]>(initialRows);
   const [notes, setNotes] = useState(initialNotes);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
@@ -85,6 +87,7 @@ export function MergeReviewForm({
     }
 
     setStatus("saved");
+    router.push("/");
   }
 
   return (
@@ -114,7 +117,7 @@ export function MergeReviewForm({
             {continueLabel}
           </Link>
           <span className={cn("save-state", status)}>
-            {status === "saved" ? "Saved" : status === "saving" ? "Saving..." : status === "error" ? "Save failed" : "Ready"}
+            {status === "saved" ? "Saved" : status === "saving" ? "Saving..." : status === "error" ? "Save failed" : ""}
           </span>
         </div>
       </section>
@@ -168,6 +171,15 @@ export function MergeReviewForm({
               </div>
             );
           })}
+        </div>
+
+        <div className="final-review-actions" style={{ justifyContent: "flex-end", marginTop: "16px" }}>
+          <span className={cn("save-state", status)}>
+            {status === "saved" ? "Saved" : status === "saving" ? "Saving..." : status === "error" ? "Save failed" : ""}
+          </span>
+          <button type="button" className="primary-button" onClick={handleSave}>
+            Save merge review
+          </button>
         </div>
       </section>
     </div>

@@ -7,13 +7,24 @@ const copy: Record<string, string> = {
   Diagnostic: "Assess cases centered on diagnostic reasoning, interpretation, and uncertainty."
 };
 
+const AVAILABLE_SECTIONS = new Set(["management"]);
+
 export function SectionCards({ sections }: { sections: SectionWithProgress[] }) {
   return (
     <div className="section-grid">
-      {sections.map((section, index) => {
-        const previousSection = index > 0 ? sections[index - 1] : null;
-        const lockedReason = previousSection ? `Complete ${previousSection.name} first` : "";
-        const sectionComplete = section.progress.total > 0 && section.progress.completed === section.progress.total;
+      {sections.map((section) => {
+        const isAvailable = AVAILABLE_SECTIONS.has(section.slug);
+
+        if (!isAvailable) {
+          return (
+            <div key={section.id} className="section-card locked coming-soon">
+              <div className="eyebrow">Section</div>
+              <h3>{section.name}</h3>
+              <p>{copy[section.name] ?? section.description ?? "Open this section to start reviewing cases."}</p>
+              <span className="section-lock-note">Coming soon</span>
+            </div>
+          );
+        }
 
         if (section.locked) {
           return (
@@ -30,14 +41,15 @@ export function SectionCards({ sections }: { sections: SectionWithProgress[] }) 
                   <div className="section-progress-fill" style={{ width: `${section.progress.percentage}%` }} />
                 </div>
               </div>
-              <span className="section-lock-note">{lockedReason}</span>
             </div>
           );
         }
 
+        const isComplete = section.progress.total > 0 && section.progress.completed === section.progress.total;
+
         return (
-          <div key={section.id} className={`section-card-wrapper${sectionComplete ? " section-card-complete" : ""}`}>
-            <Link href={`/sections/${section.slug}`} className="section-card">
+          <div key={section.id} className="section-card-wrapper">
+            <div className="section-card">
               <div className="eyebrow">Section</div>
               <h3>{section.name}</h3>
               <p>{copy[section.name] ?? section.description ?? "Open this section to start reviewing cases."}</p>
@@ -50,11 +62,11 @@ export function SectionCards({ sections }: { sections: SectionWithProgress[] }) 
                   <div className="section-progress-fill" style={{ width: `${section.progress.percentage}%` }} />
                 </div>
               </div>
-              <span className="section-cta">{sectionComplete ? "Review cases" : "Open workspace"}</span>
-            </Link>
-            {sectionComplete ? (
-              <Link href={`/sections/${section.slug}/merge-review`} className="section-merge-cta">
-                Go to Merge Review →
+              <Link href={`/sections/${section.slug}`} className="section-cta">Open workspace</Link>
+            </div>
+            {isComplete ? (
+              <Link href={`/sections/${section.slug}/merge-review`} className="section-merge-note">
+                Merge review available →
               </Link>
             ) : null}
           </div>
