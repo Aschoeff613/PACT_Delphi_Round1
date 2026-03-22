@@ -17,38 +17,41 @@ const questions = [
   {
     key: "risk_severity",
     title: "Risk Severity",
-    help: "How much harm could result if this task is performed poorly?",
-    low: "Minimal harm",
-    high: "Severe harm / mortality risk"
+    help: "How much patient harm could result if this task is performed poorly?",
+    low: "Errors cause minimal or easily reversible harm",
+    high: "Errors can cause death or permanent disability"
   },
   {
     key: "cognitive_complexity",
     title: "Cognitive Complexity",
-    help: "How much synthesis, judgment, and pressure does this task require?",
-    low: "Straightforward, low synthesis",
-    high: "Highly complex, multi-source reasoning under pressure"
+    help: "How much synthesis, ambiguity, and cognitive load does this task demand?",
+    low: "Single data source, clear guidelines, low ambiguity",
+    high: "Multiple competing data sources, high ambiguity, severe time pressure"
   },
   {
     key: "performance_variability",
     title: "Performance Variability",
-    help: "How much would performance vary across clinicians or settings?",
-    low: "Consistent across clinicians/settings",
-    high: "Highly variable across clinicians/settings"
+    help: "How much does physician performance on this task vary across clinicians and settings?",
+    low: "Physicians converge on same decision >90% of the time",
+    high: "Wide practice variation; reasonable physicians frequently disagree"
   },
   {
     key: "ai_relevance",
     title: "AI Relevance",
-    help: "How plausible is meaningful LLM support for this task?",
-    low: "Little plausible LLM support",
-    high: "Strong plausible LLM support"
+    help: "Does this task involve information processing that an LLM could plausibly assist with?",
+    low: "Primarily physical/ procedural; LLM unlikely to help",
+    high: "Core information synthesis/ retrieval where LLMs have demonstrated capability"
   }
 ] as const;
 
 function selectionLabel(value: number | null) {
   if (value === null) return "Not yet rated";
-  if (value <= 2) return "Low";
-  if (value <= 4) return "Moderate";
-  return "High";
+  if (value === 1) return "Very Low";
+  if (value === 2) return "Low";
+  if (value === 3) return "Moderate-Low";
+  if (value === 4) return "Moderate-High";
+  if (value === 5) return "High";
+  return "Very High";
 }
 
 export function ReviewPanel({
@@ -129,9 +132,9 @@ export function ReviewPanel({
       <div className="panel-header">
         <div>
           <div className="eyebrow">Structured rating</div>
-          <h2>Case scoring</h2>
+          <h2>Cognitive task scoring</h2>
         </div>
-        <span className={cn("save-state", status)}>{status === "saved" ? `Saved ${savedAt}` : status === "saving" ? "Saving..." : status === "error" ? "Save failed" : "Ready"}</span>
+        <span className={cn("save-state", status)}>{status === "saved" ? `Saved ${savedAt}` : status === "saving" ? "Saving..." : status === "error" ? "Save failed" : ""}</span>
       </div>
 
       <div className="completion-banner">
@@ -146,28 +149,28 @@ export function ReviewPanel({
             <h3>{question.title}</h3>
             <p>{question.help}</p>
           </div>
-          <div className="slider-row">
-            <span className="slider-end-label">{question.low}</span>
-            <div className="slider-track-wrap">
-              <input
-                type="range"
-                min={1}
-                max={6}
-                step={0.5}
-                value={state[question.key] ?? 3.5}
-                className={cn("rating-slider", state[question.key] === null && "unset")}
-                onChange={(e) => {
-                  const val = Math.round(Number(e.target.value));
-                  update({ [question.key]: val as Partial<RatingState>[typeof question.key] } as Partial<RatingState>);
-                }}
-              />
-              <div className="slider-ticks">
-                {[1, 2, 3, 4, 5, 6].map((n) => (
-                  <span key={n} className={cn("slider-tick", state[question.key] === n && "active")}>{n}</span>
-                ))}
-              </div>
+          <div className="slider-track-wrap slider-track-wrap--full">
+            <input
+              type="range"
+              min={1}
+              max={6}
+              step={0.5}
+              value={state[question.key] ?? 3.5}
+              className={cn("rating-slider", state[question.key] === null && "unset")}
+              onChange={(e) => {
+                const val = Math.round(Number(e.target.value));
+                update({ [question.key]: val as Partial<RatingState>[typeof question.key] } as Partial<RatingState>);
+              }}
+            />
+            <div className="slider-ticks">
+              {[1, 2, 3, 4, 5, 6].map((n) => (
+                <span key={n} className={cn("slider-tick", state[question.key] === n && "active")}>{n}</span>
+              ))}
             </div>
-            <span className="slider-end-label slider-end-right">{question.high}</span>
+            <div className="slider-anchors">
+              <span className="slider-end-label">{question.low}</span>
+              <span className="slider-end-label slider-end-right">{question.high}</span>
+            </div>
           </div>
           <div className="selection-note">
             {state[question.key] !== null ? `${state[question.key]} — ${selectionLabel(state[question.key])}` : "Not yet rated"}

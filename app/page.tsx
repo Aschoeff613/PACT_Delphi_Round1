@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { CompletionBanner } from "@/components/completion-banner";
 import { SectionCards } from "@/components/section-cards";
 import { buildSectionProgress } from "@/lib/review-flow";
 import { getReviewerSession } from "@/lib/reviewer-session";
@@ -33,9 +34,13 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     .eq("reviewer_id", session.reviewer.id);
 
   const sectionsWithProgress = buildSectionProgress(sections ?? [], cases ?? [], ratings ?? []);
+  const allComplete = sectionsWithProgress.length > 0 && sectionsWithProgress.every(
+    (s) => s.progress.total > 0 && s.progress.completed === s.progress.total
+  );
 
   return (
     <>
+      {allComplete ? <CompletionBanner /> : null}
       {params.welcomeCode ? (
         <section className="success-banner">
           <strong>Reviewer code created:</strong> {params.welcomeCode}. Save this code and reuse it with your last name when you return.
@@ -44,7 +49,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <section className="hero">
         <div className="eyebrow">Modified Delphi review</div>
         <p className="hero-tagline">A benchmark for physician-AI teaming in high-stakes clinical tasks.</p>
-        <p>Rate each case on four 1 to 6 scales, leave context where needed, and move quickly through the queue with autosave and persistent progress.</p>
+        <p>Rate each case on four 1 to 6 scales, leave context where needed, and please provide us any feedback. The form will autosave as you go along.</p>
       </section>
       <SectionCards sections={sectionsWithProgress} />
     </>

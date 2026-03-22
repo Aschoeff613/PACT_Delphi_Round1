@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { ReviewPanel } from "@/components/review-panel";
 import { ReviewProgress } from "@/components/review-progress";
 import { ReviewSidebar } from "@/components/review-sidebar";
+import { SectionTimer } from "@/components/section-timer";
 import { buildSectionProgress } from "@/lib/review-flow";
 import { getReviewerSession } from "@/lib/reviewer-session";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -64,6 +65,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
 
   return (
     <>
+      <SectionTimer sectionId={section.id} />
       <div className="review-progress-bar">
         <ReviewProgress completed={completionCount(navCases)} total={navCases.length} />
       </div>
@@ -87,13 +89,13 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
           </section>
           <div className="review-copy">
             <section>
-              <h2>Scenario</h2>
-              <p className="body-block">{activeCase.scenario}</p>
+              <h2>Clinical task being judged</h2>
+              <p className="body-block">{activeCase.task_definition}</p>
             </section>
 
             <section>
-              <h2>Clinical task being judged</h2>
-              <p className="body-block">{activeCase.task_definition}</p>
+              <h2>Example Scenarios:</h2>
+              <p className="body-block">{activeCase.scenario}</p>
             </section>
           </div>
 
