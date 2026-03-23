@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { MergeReviewForm } from "@/components/merge-review-form";
-import { SECTION_ORDER, buildSectionProgress } from "@/lib/review-flow";
+import { buildSectionProgress } from "@/lib/review-flow";
 import { getReviewerSession } from "@/lib/reviewer-session";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -54,10 +54,8 @@ export default async function MergeReviewPage({ params }: MergeReviewPageProps) 
   ]);
 
   const sectionCases = (cases ?? []).filter((item) => item.section_id === rawSection.id);
-  const sectionOrderIndex = SECTION_ORDER.indexOf(slug as (typeof SECTION_ORDER)[number]);
-  const nextSection = sectionsWithProgress.find((item) => SECTION_ORDER.indexOf(item.slug as (typeof SECTION_ORDER)[number]) === sectionOrderIndex + 1);
-  const continueHref = nextSection ? `/sections/${nextSection.slug}` : "/";
-  const continueLabel = nextSection ? `Continue to ${nextSection.name}` : "Back to sections";
+  const continueHref = "/";
+  const continueLabel = "Back to sections";
 
   return (
     <div className="merge-review-shell">
