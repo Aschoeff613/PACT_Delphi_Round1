@@ -5,8 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type RatingState = {
-  risk_severity: number | null;
-  cognitive_complexity: number | null;
+  clinical_relevance: number | null;
   performance_variability: number | null;
   ai_relevance: number | null;
   comment: string;
@@ -15,32 +14,25 @@ type RatingState = {
 
 const questions = [
   {
-    key: "risk_severity",
-    title: "Risk Severity",
-    help: "How much patient harm could result if this task is performed poorly?",
-    low: "Errors cause minimal or easily reversible harm",
-    high: "Errors can cause death or permanent disability"
-  },
-  {
-    key: "cognitive_complexity",
-    title: "Cognitive Complexity",
-    help: "How much synthesis, ambiguity, and cognitive load does this task demand?",
-    low: "Single data source, clear guidelines, low ambiguity",
-    high: "Multiple competing data sources, high ambiguity, severe time pressure"
+    key: "clinical_relevance",
+    title: "Clinical Relevance",
+    help: "How relevant and important is this clinical task to patient outcomes and care quality?",
+    low: "Minimal impact on patient outcomes; rarely encountered",
+    high: "Critical to patient safety; routinely encountered in practice"
   },
   {
     key: "performance_variability",
-    title: "Performance Variability",
-    help: "How much does physician performance on this task vary across clinicians and settings?",
-    low: "Physicians converge on same decision >90% of the time",
-    high: "Wide practice variation; reasonable physicians frequently disagree"
+    title: "Performance Variability / Saturation",
+    help: "How much do providers vary in their performance on this task?",
+    low: "Providers converge on the same approach with near-universal accuracy",
+    high: "Wide practice variation; reasonable clinicians frequently disagree or diverge"
   },
   {
     key: "ai_relevance",
-    title: "AI Relevance",
-    help: "Does this task involve information processing that an LLM could plausibly assist with?",
-    low: "Primarily physical/ procedural; LLM unlikely to help",
-    high: "Core information synthesis/ retrieval where LLMs have demonstrated capability"
+    title: "AI Augmentation Potential",
+    help: "Could AI (including ML, LLMs, agents, etc.) meaningfully augment this task?",
+    low: "Primarily physical or procedural; AI unlikely to add value",
+    high: "Core information synthesis, pattern recognition, or retrieval where AI has demonstrated capability"
   }
 ] as const;
 
@@ -58,14 +50,12 @@ export function ReviewPanel({
   caseId,
   initial,
   previousHref,
-  nextHref,
-  mergeReviewHref
+  nextHref
 }: {
   caseId: string;
   initial: RatingState;
   previousHref: string | null;
   nextHref: string | null;
-  mergeReviewHref: string | null;
 }) {
   const [state, setState] = useState<RatingState>(initial);
   const [savedAt, setSavedAt] = useState<string | null>(null);
@@ -82,16 +72,14 @@ export function ReviewPanel({
 
   const isCompleted = useMemo(() => {
     return [
-      state.risk_severity,
-      state.cognitive_complexity,
+      state.clinical_relevance,
       state.performance_variability,
       state.ai_relevance
     ].every((value) => value !== null);
   }, [state]);
   const answeredCount = useMemo(() => {
     return [
-      state.risk_severity,
-      state.cognitive_complexity,
+      state.clinical_relevance,
       state.performance_variability,
       state.ai_relevance
     ].filter((value) => value !== null).length;
@@ -139,8 +127,8 @@ export function ReviewPanel({
 
       <div className="completion-banner">
         <strong>{isCompleted ? "Completed" : "In progress"}</strong>
-        <span>{answeredCount} of 4 scales answered</span>
-        <span>{isCompleted ? "Case complete. You can move to the next case or revise any score." : "A case is complete when all four ratings are selected."}</span>
+        <span>{answeredCount} of 3 scales answered</span>
+        <span>{isCompleted ? "Case complete. You can move to the next case or revise any score." : "A case is complete when all three ratings are selected."}</span>
       </div>
 
       {questions.map((question) => (
@@ -213,18 +201,7 @@ export function ReviewPanel({
           ) : (
             <div className="panel-next-blocked">
               <span className="primary-button button-disabled">Next case</span>
-              <span className="case-nav-hint">Complete all four scores before moving on.</span>
-            </div>
-          )
-        ) : mergeReviewHref ? (
-          isCompleted ? (
-            <Link className="primary-button" href={mergeReviewHref}>
-              Section merge review
-            </Link>
-          ) : (
-            <div className="panel-next-blocked">
-              <span className="primary-button button-disabled">Section merge review</span>
-              <span className="case-nav-hint">Complete all four scores before moving on.</span>
+              <span className="case-nav-hint">Complete all three scores before moving on.</span>
             </div>
           )
         ) : (

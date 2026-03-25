@@ -30,7 +30,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
     supabase.from("cases").select("id, section_id, title, scenario, task_definition, order_index").order("order_index"),
     supabase
       .from("ratings")
-      .select("id, case_id, risk_severity, cognitive_complexity, performance_variability, ai_relevance, comment, marked_for_discussion")
+      .select("id, case_id, clinical_relevance, performance_variability, ai_relevance, comment, marked_for_discussion")
       .eq("reviewer_id", session.reviewer.id)
   ]);
 
@@ -61,7 +61,6 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
   const nextCase = activeIndex < cases.length - 1 ? cases[activeIndex + 1] : null;
   const activeRating = ratingsByCase.get(activeCase.id);
   const activeStatus = caseStatus(activeRating ?? null);
-  const sectionComplete = navCases.length > 0 && completionCount(navCases) === navCases.length;
 
   return (
     <>
@@ -70,7 +69,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
         <ReviewProgress
           completed={completionCount(navCases)}
           total={navCases.length}
-          mergeReviewHref={sectionComplete ? `/sections/${slug}/merge-review` : null}
+
         />
       </div>
       <div className="review-layout">
@@ -87,10 +86,9 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
               <span className={`meta-pill status-${activeStatus}`}>{activeStatus === "not_started" ? "Not started" : activeStatus === "in_progress" ? "In progress" : "Completed"}</span>
             </div>
           </div>
-          <section className="review-instructions">
-            <h2>How to rate this case</h2>
-            <p>Read the vignette below, then rate this case on risk severity, cognitive complexity, performance variability, and AI relevance.</p>
-          </section>
+          <p className="review-instructions-inline">
+            <strong>How to rate this case:</strong> Read the vignette below, then rate this case on clinical relevance, performance variability/saturation, and AI augmentation potential.
+          </p>
           <div className="review-copy">
             <section>
               <h2>Clinical task being judged</h2>
@@ -116,8 +114,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
         <ReviewPanel
           caseId={activeCase.id}
           initial={{
-            risk_severity: activeRating?.risk_severity ?? null,
-            cognitive_complexity: activeRating?.cognitive_complexity ?? null,
+            clinical_relevance: activeRating?.clinical_relevance ?? null,
             performance_variability: activeRating?.performance_variability ?? null,
             ai_relevance: activeRating?.ai_relevance ?? null,
             comment: activeRating?.comment ?? "",
@@ -125,7 +122,6 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
           }}
           previousHref={previousCase ? `/sections/${slug}?case=${previousCase.id}` : null}
           nextHref={nextCase ? `/sections/${slug}?case=${nextCase.id}` : null}
-          mergeReviewHref={!nextCase && sectionComplete ? `/sections/${slug}/merge-review` : null}
         />
       </div>
     </>

@@ -10,8 +10,7 @@ type CaseLite = {
 
 type RatingLite = {
   case_id: string;
-  risk_severity: number | null;
-  cognitive_complexity: number | null;
+  clinical_relevance: number | null;
   performance_variability: number | null;
   ai_relevance: number | null;
 };

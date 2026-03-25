@@ -4,8 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 type Payload = {
   caseId: string;
-  risk_severity: number | null;
-  cognitive_complexity: number | null;
+  clinical_relevance: number | null;
   performance_variability: number | null;
   ai_relevance: number | null;
   comment: string;
@@ -24,8 +23,7 @@ export async function POST(request: Request) {
 
   const payload = (await request.json()) as Payload;
   const isComplete = [
-    payload.risk_severity,
-    payload.cognitive_complexity,
+    payload.clinical_relevance,
     payload.performance_variability,
     payload.ai_relevance
   ].every((value) => value !== null);
@@ -34,8 +32,7 @@ export async function POST(request: Request) {
   const { error } = await supabase.rpc("save_reviewer_rating", {
     p_reviewer_id: session.reviewer.id,
     p_case_id: payload.caseId,
-    p_risk_severity: payload.risk_severity,
-    p_cognitive_complexity: payload.cognitive_complexity,
+    p_clinical_relevance: payload.clinical_relevance,
     p_performance_variability: payload.performance_variability,
     p_ai_relevance: payload.ai_relevance,
     p_comment: payload.comment || null,

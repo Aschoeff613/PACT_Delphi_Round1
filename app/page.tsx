@@ -30,7 +30,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   const { data: ratings } = await supabase
     .from("ratings")
-    .select("case_id, risk_severity, cognitive_complexity, performance_variability, ai_relevance")
+    .select("case_id, clinical_relevance, performance_variability, ai_relevance")
     .eq("reviewer_id", session.reviewer.id);
 
   const sectionsWithProgress = buildSectionProgress(sections ?? [], cases ?? [], ratings ?? []);
@@ -49,7 +49,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <section className="hero">
         <div className="eyebrow">Modified Delphi review</div>
         <p className="hero-tagline">A benchmark for physician-AI teaming in high-stakes clinical tasks.</p>
-        <p>Rate each case on four 1 to 6 scales, leave context where needed, and please provide us any feedback. The form will autosave as you go along.</p>
+        <p>Rate each case on three 1 to 6 scales, leave context where needed, and please provide us any feedback. The form will autosave as you go along.</p>
       </section>
       <SectionCards sections={sectionsWithProgress} />
     </>

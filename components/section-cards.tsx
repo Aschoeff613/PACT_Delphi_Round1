@@ -64,11 +64,6 @@ export function SectionCards({ sections }: { sections: SectionWithProgress[] }) 
               </div>
               <Link href={`/sections/${section.slug}`} className="section-cta">Open workspace</Link>
             </div>
-            {isComplete ? (
-              <Link href={`/sections/${section.slug}/merge-review`} className="section-merge-note">
-                Merge review available →
-              </Link>
-            ) : null}
           </div>
         );
       })}

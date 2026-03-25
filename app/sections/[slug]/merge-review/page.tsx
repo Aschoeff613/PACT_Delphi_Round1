@@ -24,7 +24,7 @@ export default async function MergeReviewPage({ params }: MergeReviewPageProps) 
     supabase.from("cases").select("id, section_id, title, order_index").order("order_index"),
     supabase
       .from("ratings")
-      .select("case_id, risk_severity, cognitive_complexity, performance_variability, ai_relevance")
+      .select("case_id, clinical_relevance, performance_variability, ai_relevance")
       .eq("reviewer_id", session.reviewer.id)
   ]);
 
