@@ -125,12 +125,6 @@ export function ReviewPanel({
         <span className={cn("save-state", status)}>{status === "saved" ? `Saved ${savedAt}` : status === "saving" ? "Saving..." : status === "error" ? "Save failed" : ""}</span>
       </div>
 
-      <div className="completion-banner">
-        <strong>{isCompleted ? "Completed" : "In progress"}</strong>
-        <span>{answeredCount} of 3 scales answered</span>
-        <span>{isCompleted ? "Case complete. You can move to the next case or revise any score." : "A case is complete when all three ratings are selected."}</span>
-      </div>
-
       {questions.map((question) => (
         <div key={question.key} className="likert-block">
           <div className="likert-copy">
@@ -160,9 +154,6 @@ export function ReviewPanel({
               <span className="slider-end-label slider-end-right">{question.high}</span>
             </div>
           </div>
-          <div className="selection-note">
-            {state[question.key] !== null ? `${state[question.key]} — ${selectionLabel(state[question.key])}` : "Not yet rated"}
-          </div>
         </div>
       ))}
 
@@ -187,7 +178,7 @@ export function ReviewPanel({
       <div className="panel-nav-actions">
         {previousHref ? (
           <Link className="ghost-button" href={previousHref}>
-            Previous case
+            Previous task
           </Link>
         ) : (
           <span />
@@ -196,13 +187,13 @@ export function ReviewPanel({
         {nextHref ? (
           isCompleted ? (
             <Link className="primary-button" href={nextHref}>
-              Next case
+              Next task
             </Link>
           ) : (
-            <div className="panel-next-blocked">
-              <span className="primary-button button-disabled">Next case</span>
+            <>
               <span className="case-nav-hint">Complete all three scores before moving on.</span>
-            </div>
+              <span className="primary-button button-disabled">Next case</span>
+            </>
           )
         ) : (
           <Link className="ghost-button" href="/">

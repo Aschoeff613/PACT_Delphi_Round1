@@ -51,7 +51,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
       if (!error && createdReviewer) {
         await createReviewerSession(createdReviewer.id);
-        redirect(`${redirectTo}${redirectTo.includes("?") ? "&" : "?"}welcomeCode=${encodeURIComponent(code)}`);
+        redirect(redirectTo);
       }
 
       if (error?.code !== "23505") {

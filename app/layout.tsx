@@ -5,7 +5,7 @@ import { getReviewerSession } from "@/lib/reviewer-session";
 
 export const metadata: Metadata = {
   title: "PACTBench",
-  description: "Physician-AI Collaboration Teaming — Expert case review and benchmarking platform."
+  description: "Physician-AI Collaboration Teaming — Expert task review and benchmarking platform."
 };
 
 export default async function RootLayout({

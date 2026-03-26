@@ -9,6 +9,8 @@ import { getReviewerSession } from "@/lib/reviewer-session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { caseStatus, completionCount } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 type SectionPageProps = {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ case?: string }>;
@@ -82,12 +84,12 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
               <h1>{activeCase.title}</h1>
             </div>
             <div className="review-case-meta">
-              <span className="meta-pill">Case {activeIndex + 1} of {cases.length}</span>
-              <span className={`meta-pill status-${activeStatus}`}>{activeStatus === "not_started" ? "Not started" : activeStatus === "in_progress" ? "In progress" : "Completed"}</span>
+              <span className="meta-pill">Task {activeIndex + 1} of {cases.length}</span>
+              {activeStatus !== "not_started" && <span className={`meta-pill status-${activeStatus}`}>{activeStatus === "in_progress" ? "In progress" : "Completed"}</span>}
             </div>
           </div>
           <p className="review-instructions-inline">
-            <strong>How to rate this case:</strong> Read the vignette below, then rate this case on clinical relevance, performance variability/saturation, and AI augmentation potential.
+            <strong>How to rate this task:</strong> Read the vignette below, then rate this task on clinical relevance, performance variability/saturation, and AI augmentation potential.
           </p>
           <div className="review-copy">
             <section>
@@ -104,7 +106,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
           <div className="case-nav-actions">
             {previousCase ? (
               <Link className="ghost-button" href={`/sections/${slug}?case=${previousCase.id}`}>
-                Previous case
+                Previous task
               </Link>
             ) : <span />}
             <span />

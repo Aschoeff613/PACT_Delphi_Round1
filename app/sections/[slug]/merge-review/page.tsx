@@ -61,7 +61,7 @@ export default async function MergeReviewPage({ params }: MergeReviewPageProps) 
     <div className="merge-review-shell">
       <div className="eyebrow">Section follow-up</div>
       <h2>{section.name} overlap review</h2>
-      <p>Before moving on, note any cases in this section that feel duplicative, overly close in scope, or better merged together.</p>
+      <p>Before moving on, note any tasks in this section that feel duplicative, overly close in scope, or better merged together.</p>
 
       <MergeReviewForm
         sectionSlug={slug}

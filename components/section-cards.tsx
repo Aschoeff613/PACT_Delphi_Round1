@@ -3,8 +3,8 @@ import type { SectionWithProgress } from "@/lib/types";
 
 const copy: Record<string, string> = {
   Management: "Review management-focused scenarios involving treatment choices, escalation, and workflow implications.",
-  Communication: "Rate communication-heavy cases, handoffs, patient interactions, and coordination tasks.",
-  Diagnostic: "Assess cases centered on diagnostic reasoning, interpretation, and uncertainty."
+  Communication: "Rate communication-heavy tasks, handoffs, patient interactions, and coordination.",
+  Diagnostic: "Assess tasks centered on diagnostic reasoning, interpretation, and uncertainty."
 };
 
 const AVAILABLE_SECTIONS = new Set(["management"]);
@@ -20,7 +20,7 @@ export function SectionCards({ sections }: { sections: SectionWithProgress[] }) 
             <div key={section.id} className="section-card locked coming-soon">
               <div className="eyebrow">Section</div>
               <h3>{section.name}</h3>
-              <p>{copy[section.name] ?? section.description ?? "Open this section to start reviewing cases."}</p>
+              <p>{copy[section.name] ?? section.description ?? "Open this section to start reviewing tasks."}</p>
               <span className="section-lock-note">Coming soon</span>
             </div>
           );
@@ -31,7 +31,7 @@ export function SectionCards({ sections }: { sections: SectionWithProgress[] }) 
             <div key={section.id} className="section-card locked">
               <div className="eyebrow">Section</div>
               <h3>{section.name}</h3>
-              <p>{copy[section.name] ?? section.description ?? "Open this section to start reviewing cases."}</p>
+              <p>{copy[section.name] ?? section.description ?? "Open this section to start reviewing tasks."}</p>
               <div className="section-progress">
                 <div className="section-progress-labels">
                   <span>{section.progress.completed} of {section.progress.total} completed</span>
@@ -48,11 +48,11 @@ export function SectionCards({ sections }: { sections: SectionWithProgress[] }) 
         const isComplete = section.progress.total > 0 && section.progress.completed === section.progress.total;
 
         return (
-          <div key={section.id} className="section-card-wrapper">
-            <div className="section-card">
+          <Link key={section.id} href={`/sections/${section.slug}`} className="section-card-wrapper">
+            <div className="section-card clickable">
               <div className="eyebrow">Section</div>
               <h3>{section.name}</h3>
-              <p>{copy[section.name] ?? section.description ?? "Open this section to start reviewing cases."}</p>
+              <p>{copy[section.name] ?? section.description ?? "Open this section to start reviewing tasks."}</p>
               <div className="section-progress">
                 <div className="section-progress-labels">
                   <span>{section.progress.completed} of {section.progress.total} completed</span>
@@ -62,9 +62,9 @@ export function SectionCards({ sections }: { sections: SectionWithProgress[] }) 
                   <div className="section-progress-fill" style={{ width: `${section.progress.percentage}%` }} />
                 </div>
               </div>
-              <Link href={`/sections/${section.slug}`} className="section-cta">Open workspace</Link>
+              <span className="section-cta">Open workspace</span>
             </div>
-          </div>
+          </Link>
         );
       })}
     </div>

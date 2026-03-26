@@ -5,13 +5,8 @@ import { buildSectionProgress } from "@/lib/review-flow";
 import { getReviewerSession } from "@/lib/reviewer-session";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-type HomePageProps = {
-  searchParams: Promise<{ welcomeCode?: string }>;
-};
-
-export default async function HomePage({ searchParams }: HomePageProps) {
+export default async function HomePage() {
   const session = await getReviewerSession();
-  const params = await searchParams;
 
   if (!session) {
     redirect("/login");
@@ -41,15 +36,16 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   return (
     <>
       {allComplete ? <CompletionBanner /> : null}
-      {params.welcomeCode ? (
-        <section className="success-banner">
-          <strong>Reviewer code created:</strong> {params.welcomeCode}. Save this code and reuse it with your last name when you return.
-        </section>
-      ) : null}
       <section className="hero">
-        <div className="eyebrow">Modified Delphi review</div>
         <p className="hero-tagline">A benchmark for physician-AI teaming in high-stakes clinical tasks.</p>
-        <p>Rate each case on three 1 to 6 scales, leave context where needed, and please provide us any feedback. The form will autosave as you go along.</p>
+        <p><strong>Instructions:</strong></p>
+        <ul className="hero-instructions">
+          <li>Complete each section in order — the next section will unlock in the coming weeks after a group review</li>
+          <li>For each task, rate all three scales from 1 to 6</li>
+          <li>Add optional comments for context on any rating</li>
+          <li>Your progress autosaves as you go</li>
+          <li>Estimated time to complete: 15 minutes</li>
+        </ul>
       </section>
       <SectionCards sections={sectionsWithProgress} />
     </>

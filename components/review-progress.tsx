@@ -19,7 +19,7 @@ export function ReviewProgress({
       </div>
       {isComplete ? (
         <div className="progress-complete-cta">
-          <span className="progress-complete-label">All cases complete</span>
+          <span className="progress-complete-label">All tasks complete</span>
         </div>
       ) : null}
     </div>

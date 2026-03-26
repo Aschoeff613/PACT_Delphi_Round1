@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getReviewerSession } from "@/lib/reviewer-session";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -42,6 +43,12 @@ export async function POST(request: Request) {
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  try {
+    revalidatePath("/sections", "layout");
+  } catch {
+    // revalidatePath can throw in route handlers
   }
 
   return NextResponse.json({ ok: true });
