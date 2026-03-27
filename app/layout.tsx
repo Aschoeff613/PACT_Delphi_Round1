@@ -32,7 +32,7 @@ export default async function RootLayout({
               {reviewer?.code ? <span className="hint">{reviewer.code}</span> : null}
               {reviewer ? (
                 <a className="ghost-button compact-button" href="/">
-                  Sections
+                  Home
                 </a>
               ) : null}
               {reviewer ? <AuthSignOut /> : null}

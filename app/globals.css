@@ -572,6 +572,7 @@ textarea {
 }
 
 .meta-pill {
+  white-space: nowrap;
   width: fit-content;
   border-radius: 999px;
   padding: 8px 12px;

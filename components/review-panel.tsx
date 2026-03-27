@@ -135,9 +135,9 @@ export function ReviewPanel({
             <input
               type="range"
               min={1}
-              max={6}
+              max={5}
               step={0.5}
-              value={state[question.key] ?? 3.5}
+              value={state[question.key] ?? 3}
               className={cn("rating-slider", state[question.key] === null && "unset")}
               onChange={(e) => {
                 const val = Math.round(Number(e.target.value));
@@ -145,7 +145,7 @@ export function ReviewPanel({
               }}
             />
             <div className="slider-ticks">
-              {[1, 2, 3, 4, 5, 6].map((n) => (
+              {[1, 2, 3, 4, 5].map((n) => (
                 <span key={n} className={cn("slider-tick", state[question.key] === n && "active")}>{n}</span>
               ))}
             </div>

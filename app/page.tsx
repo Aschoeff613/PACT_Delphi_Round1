@@ -40,8 +40,9 @@ export default async function HomePage() {
         <p className="hero-tagline">A benchmark for physician-AI teaming in high-stakes clinical tasks.</p>
         <p><strong>Instructions:</strong></p>
         <ul className="hero-instructions">
+          <li>For each task, read the cognitive task description, review the example scenarios, then answer 3 rating questions</li>
           <li>Complete each section in order — the next section will unlock in the coming weeks after a group review</li>
-          <li>For each task, rate all three scales from 1 to 6</li>
+          <li>For each task, rate all three scales from 1 to 5</li>
           <li>Add optional comments for context on any rating</li>
           <li>Your progress autosaves as you go</li>
           <li>Estimated time to complete: 15 minutes</li>
