@@ -120,7 +120,7 @@ export function ReviewPanel({
       <div className="panel-header">
         <div>
           <div className="eyebrow">Structured rating</div>
-          <h2>Cognitive task scoring</h2>
+          <h2>Rate this Task</h2>
         </div>
         <span className={cn("save-state", status)}>{status === "saved" ? `Saved ${savedAt}` : status === "saving" ? "Saving..." : status === "error" ? "Save failed" : ""}</span>
       </div>
