@@ -510,13 +510,15 @@ textarea {
   color: #bbf7d0;
 }
 
+/* Left pane — quiet document surface, recedes behind scoring pane */
 .review-case-card {
   position: sticky;
   top: 14px;
   max-height: calc(100vh - 28px);
   overflow: auto;
   padding: 28px;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(10, 15, 26, 0.97));
+  background: linear-gradient(180deg, rgba(10, 14, 26, 0.91), rgba(7, 10, 19, 0.89));
+  border-color: rgba(36, 48, 65, 0.45);
 }
 
 .review-instructions {
