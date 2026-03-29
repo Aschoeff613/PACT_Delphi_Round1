@@ -31,7 +31,7 @@ const questions = [
     key: "ai_relevance",
     title: "AI Augmentation Potential",
     help: "Could AI (including ML, LLMs, agents, etc.) meaningfully augment this task?",
-    low: "Primarily physical or procedural; AI unlikely to add value",
+    low: "Task requires judgment AI cannot meaningfully replicate",
     high: "Core information synthesis, pattern recognition, or retrieval where AI has demonstrated capability"
   }
 ] as const;
