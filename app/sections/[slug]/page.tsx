@@ -65,6 +65,8 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
   const activeRating = ratingsByCase.get(activeCase.id);
   const activeStatus = caseStatus(activeRating ?? null);
 
+  const content = getCaseContent(slug, activeCase.order_index);
+
   return (
     <>
       <SectionTimer sectionId={section.id} />
@@ -72,35 +74,37 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
         <ReviewProgress
           completed={completionCount(navCases)}
           total={navCases.length}
-
         />
       </div>
       <div className="review-layout">
         <ReviewSidebar sectionSlug={section.slug} cases={navCases} activeCaseId={activeCase.id} />
 
+        {/* ── Step 1: Review pane ─────────────────────────────────────── */}
         <main className="review-case-card">
           <div className="review-case-header">
             <div>
-              <div className="eyebrow">{section.name}</div>
+              <div className="step-badge step-badge--review">Step 1 · Review cognitive task</div>
               <h1>{activeCase.title}</h1>
             </div>
             <div className="review-case-meta">
               <span className="meta-pill">Task {activeIndex + 1} of {cases.length}</span>
-              {activeStatus !== "not_started" && <span className={`meta-pill status-${activeStatus}`}>{activeStatus === "in_progress" ? "In progress" : "Completed"}</span>}
+              {activeStatus !== "not_started" && (
+                <span className={`meta-pill status-${activeStatus}`}>
+                  {activeStatus === "in_progress" ? "In progress" : "Completed"}
+                </span>
+              )}
             </div>
           </div>
-          <p className="review-instructions-inline">
-            <strong>How to rate this task:</strong> Read the vignette below, then rate this task on clinical relevance, performance variability/saturation, and AI augmentation potential.
-          </p>
+
           <div className="review-copy">
             <section>
-              <h2>Clinical task being judged</h2>
-              <p className="body-block">{getCaseContent(slug, activeCase.order_index).task_definition}</p>
+              <h2>Cognitive task</h2>
+              <p className="body-block">{content.task_definition}</p>
             </section>
 
             <section>
-              <h2>Example Scenarios:</h2>
-              <p className="body-block">{getCaseContent(slug, activeCase.order_index).scenario}</p>
+              <h2>Example scenarios</h2>
+              <p className="body-block">{content.scenario}</p>
             </section>
           </div>
 
@@ -114,6 +118,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
           </div>
         </main>
 
+        {/* ── Step 2: Scoring panel ────────────────────────────────────── */}
         <ReviewPanel
           caseId={activeCase.id}
           initial={{

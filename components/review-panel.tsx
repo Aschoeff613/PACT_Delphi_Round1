@@ -17,12 +17,12 @@ const questions = [
     key: "clinical_relevance",
     title: "Clinical Relevance",
     help: "How relevant and important is this clinical task to patient outcomes and care quality?",
-    low: "Minimal impact on patient outcomes; rarely encountered",
+    low: "Minimal impact on patient outcomes; rarely encountered in practice",
     high: "Critical to patient safety; routinely encountered in practice"
   },
   {
     key: "performance_variability",
-    title: "Practice Variability (Saturation)",
+    title: "Practice Variability / Saturation",
     help: "How much do providers vary in their performance on this task?",
     low: "Providers converge on the same approach with near-universal accuracy",
     high: "Wide practice variation; reasonable clinicians frequently disagree or diverge"
@@ -36,15 +36,14 @@ const questions = [
   }
 ] as const;
 
-function selectionLabel(value: number | null) {
-  if (value === null) return "Not yet rated";
-  if (value === 1) return "Very Low";
-  if (value === 2) return "Low";
-  if (value === 3) return "Moderate-Low";
-  if (value === 4) return "Moderate-High";
-  if (value === 5) return "High";
-  return "Very High";
-}
+// Short labels shown inside each pill button
+const PILL_LABELS: Record<number, string> = {
+  1: "Very Low",
+  2: "Low",
+  3: "Moderate",
+  4: "High",
+  5: "Very High"
+};
 
 export function ReviewPanel({
   caseId,
@@ -76,13 +75,6 @@ export function ReviewPanel({
       state.performance_variability,
       state.ai_relevance
     ].every((value) => value !== null);
-  }, [state]);
-  const answeredCount = useMemo(() => {
-    return [
-      state.clinical_relevance,
-      state.performance_variability,
-      state.ai_relevance
-    ].filter((value) => value !== null).length;
   }, [state]);
 
   async function save(next: RatingState) {
@@ -117,64 +109,82 @@ export function ReviewPanel({
 
   return (
     <aside ref={panelRef} className="review-scoring-panel">
+      {/* ── Step 2 header ──────────────────────────────────────────── */}
       <div className="panel-header">
         <div>
-          <div className="eyebrow">Structured rating</div>
-          <h2>Rate this Task</h2>
+          <div className="step-badge step-badge--score">Step 2 · Score task</div>
+          <h2>Scoring</h2>
         </div>
-        <span className={cn("save-state", status)}>{status === "saved" ? `Saved ${savedAt}` : status === "saving" ? "Saving..." : status === "error" ? "Save failed" : ""}</span>
+        <span className={cn("save-state", status)}>
+          {status === "saved" ? `Saved ${savedAt}` : status === "saving" ? "Saving…" : status === "error" ? "Save failed" : ""}
+        </span>
       </div>
 
+      {/* ── Scoring cards ──────────────────────────────────────────── */}
       {questions.map((question) => (
         <div key={question.key} className="likert-block">
           <div className="likert-copy">
             <h3>{question.title}</h3>
             <p>{question.help}</p>
           </div>
-          <div className="slider-track-wrap slider-track-wrap--full">
-            <input
-              type="range"
-              min={1}
-              max={5}
-              step={0.5}
-              value={state[question.key] ?? 3}
-              className={cn("rating-slider", state[question.key] === null && "unset")}
-              onChange={(e) => {
-                const val = Math.round(Number(e.target.value));
-                update({ [question.key]: val as Partial<RatingState>[typeof question.key] } as Partial<RatingState>);
-              }}
-            />
-            <div className="slider-ticks">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <span key={n} className={cn("slider-tick", state[question.key] === n && "active")}>{n}</span>
-              ))}
-            </div>
-            <div className="slider-anchors">
-              <span className="slider-end-label">{question.low}</span>
-              <span className="slider-end-label slider-end-right">{question.high}</span>
-            </div>
+
+          {/* Radio-pill rating control — 1–5 scale */}
+          <div
+            className="rating-pills"
+            role="radiogroup"
+            aria-label={`${question.title} rating`}
+          >
+            {([1, 2, 3, 4, 5] as const).map((n) => (
+              <label
+                key={n}
+                className={cn("rating-pill", state[question.key] === n && "selected")}
+              >
+                <input
+                  type="radio"
+                  name={`${caseId}-${question.key}`}
+                  value={n}
+                  checked={state[question.key] === n}
+                  onChange={() =>
+                    update({ [question.key]: n as Partial<RatingState>[typeof question.key] } as Partial<RatingState>)
+                  }
+                />
+                <span className="pill-inner">
+                  <span className="pill-num">{n}</span>
+                  <span className="pill-label">{PILL_LABELS[n]}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+
+          <div className="slider-anchors">
+            <span className="slider-end-label">{question.low}</span>
+            <span className="slider-end-label slider-end-right">{question.high}</span>
           </div>
         </div>
       ))}
 
-      <label className="field-block">
-        <span>Optional comment</span>
-        <textarea
-          value={state.comment}
-          onChange={(event) => update({ comment: event.target.value })}
-          placeholder="Add nuance, edge cases, or rationale for discussion."
-        />
-      </label>
+      {/* ── Comments / flag footer ─────────────────────────────────── */}
+      <div className="panel-footer">
+        <label className="field-block">
+          <span>Optional comment</span>
+          <textarea
+            value={state.comment}
+            onChange={(event) => update({ comment: event.target.value })}
+            placeholder="Add nuance, edge cases, or rationale for discussion."
+          />
+        </label>
 
-      <label className="discussion-toggle">
-        <input
-          type="checkbox"
-          checked={state.marked_for_discussion}
-          onChange={(event) => update({ marked_for_discussion: event.target.checked })}
-        />
-        <span>Flag for panel discussion</span>
-      </label>
+        <label className="discussion-toggle">
+          <input
+            type="checkbox"
+            checked={state.marked_for_discussion}
+            onChange={(event) => update({ marked_for_discussion: event.target.checked })}
+          />
+          <span>Flag for panel discussion</span>
+        </label>
+      </div>
 
+      {/* ── Navigation ────────────────────────────────────────────── */}
       <div className="panel-nav-actions">
         {previousHref ? (
           <Link className="ghost-button" href={previousHref}>
@@ -191,8 +201,8 @@ export function ReviewPanel({
             </Link>
           ) : (
             <>
-              <span className="case-nav-hint">Complete all three scores before moving on.</span>
-              <span className="primary-button button-disabled">Next case</span>
+              <span className="case-nav-hint">Score all three dimensions to continue.</span>
+              <span className="primary-button button-disabled">Next task</span>
             </>
           )
         ) : (

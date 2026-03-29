@@ -632,7 +632,43 @@ textarea {
   padding: 24px;
   max-height: calc(100vh - 28px);
   overflow: auto;
-  background: linear-gradient(180deg, rgba(14, 20, 35, 0.99), rgba(9, 13, 23, 0.99));
+  background: linear-gradient(180deg, rgba(14, 10, 20, 0.99), rgba(9, 8, 18, 0.99));
+  border-top: 3px solid var(--accent);
+  border-color: rgba(140, 21, 21, 0.55);
+}
+
+/* ── Step badge — appears at top of both review and scoring panes ─── */
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.step-badge--review {
+  color: #93c5fd;
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(37, 99, 235, 0.28);
+}
+
+.step-badge--score {
+  color: #fca5a5;
+  background: rgba(140, 21, 21, 0.15);
+  border: 1px solid rgba(184, 58, 58, 0.38);
+}
+
+/* ── Panel footer — comment + flag below scoring cards ─────────── */
+.panel-footer {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(36, 48, 65, 0.7);
+  display: grid;
+  gap: 10px;
 }
 
 .panel-header {
@@ -640,6 +676,7 @@ textarea {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  margin-bottom: 4px;
 }
 
 .save-state {
@@ -674,11 +711,6 @@ textarea {
 
 /* hide the long descriptive sentence to save space */
 .completion-banner span:last-child {
-  display: none;
-}
-
-/* hide eyebrow label in panel header */
-.panel-header .eyebrow {
   display: none;
 }
 
@@ -764,87 +796,81 @@ textarea {
   text-align: right;
 }
 
-.rating-slider {
-  width: 100%;
-  -webkit-appearance: none;
-  appearance: none;
-  height: 5px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-light));
-  outline: none;
-  cursor: pointer;
-}
-
-.rating-slider.unset {
-  background: #314055;
-}
-
-.rating-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 17px;
-  height: 17px;
-  border-radius: 50%;
-  background: white;
-  border: 2px solid var(--accent);
-  box-shadow: 0 2px 8px rgba(140, 21, 21, 0.35);
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-}
-
-.rating-slider.unset::-webkit-slider-thumb {
-  border-color: #64748b;
-  background: #94a3b8;
-  box-shadow: none;
-}
-
-.rating-slider.unset::-moz-range-thumb {
-  border-color: #64748b;
-  background: #94a3b8;
-  box-shadow: none;
-}
-
-.rating-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
-  box-shadow: 0 4px 14px rgba(140, 21, 21, 0.45);
-}
-
-.rating-slider::-moz-range-thumb {
-  width: 17px;
-  height: 17px;
-  border-radius: 50%;
-  background: white;
-  border: 2px solid var(--accent);
-  box-shadow: 0 2px 8px rgba(140, 21, 21, 0.35);
-  cursor: pointer;
-  transition: opacity 0.15s ease;
-}
-
-.slider-ticks {
+/* ── Radio-pill rating control — replaces slider ─────────────────── */
+.rating-pills {
   display: flex;
-  justify-content: space-between;
-  padding: 0 8.5px;
-  box-sizing: border-box;
-  height: 14px;
-  margin-top: 2px;
-  overflow: visible;
+  gap: 6px;
+  margin-top: 10px;
 }
 
-.slider-tick {
-  flex: 0 0 0px;
+/* Each pill is a <label> wrapping a hidden radio + a visible inner span */
+.rating-pill {
+  flex: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.rating-pill input[type="radio"] {
+  position: absolute;
+  opacity: 0;
   width: 0;
-  overflow: visible;
-  text-align: center;
-  white-space: nowrap;
-  font-size: 0.75rem;
-  color: #a0aec0;
-  font-weight: 700;
-  transition: color 0.15s ease;
-  line-height: 14px;
+  height: 0;
 }
 
-.slider-tick.active {
-  color: var(--accent-light);
+.pill-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 58px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(36, 48, 65, 0.85);
+  background: rgba(12, 18, 31, 0.8);
+  transition: border-color 0.15s, background 0.15s;
+  padding: 8px 4px;
+  gap: 3px;
+}
+
+.rating-pill:hover .pill-inner {
+  border-color: rgba(140, 21, 21, 0.5);
+  background: rgba(22, 18, 32, 0.9);
+}
+
+.rating-pill.selected .pill-inner {
+  border-color: var(--accent);
+  background: rgba(140, 21, 21, 0.22);
+  box-shadow: 0 0 0 1px rgba(140, 21, 21, 0.35);
+}
+
+/* Keyboard focus ring on the hidden radio, shown on the visible pill */
+.rating-pill input[type="radio"]:focus-visible + .pill-inner {
+  outline: 2px solid var(--accent-light);
+  outline-offset: 2px;
+}
+
+.pill-num {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #dbe3ef;
+  line-height: 1;
+}
+
+.rating-pill.selected .pill-num {
+  color: #fca5a5;
+}
+
+.pill-label {
+  font-size: 0.58rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.rating-pill.selected .pill-label {
+  color: #fecaca;
 }
 
 .selection-note {
@@ -860,7 +886,8 @@ textarea {
 }
 
 .field-block textarea,
-.login-panel input {
+.login-panel input,
+.login-panel select {
   width: 100%;
   border-radius: 16px;
   border: 1px solid #314055;
@@ -869,8 +896,28 @@ textarea {
   color: var(--ink);
 }
 
+.login-panel select {
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+}
+
+.login-panel select option {
+  background: #0f172a;
+  color: var(--ink);
+}
+
 .field-block textarea::placeholder,
 .login-panel input::placeholder {
+  color: #64748b;
+}
+
+.login-panel select:invalid,
+.login-panel select option[value=""] {
   color: #64748b;
 }
 
@@ -1231,10 +1278,23 @@ td {
     grid-template-columns: 1fr;
   }
 
-  .review-sidebar,
+  /* On mobile: sidebar collapses to top strip, review pane first, scoring pane second */
+  .review-sidebar {
+    position: static;
+    max-height: none;
+    order: -1;
+  }
+
+  .review-case-card {
+    position: static;
+    max-height: none;
+    order: 0;
+  }
+
   .review-scoring-panel {
     position: static;
     max-height: none;
+    order: 1;
   }
 
   .review-case-header {
@@ -1262,5 +1322,10 @@ td {
   .merge-review-shell {
     width: 100%;
     padding: 22px;
+  }
+
+  /* Make pills slightly taller for touch targets on mobile */
+  .pill-inner {
+    min-height: 64px;
   }
 }
