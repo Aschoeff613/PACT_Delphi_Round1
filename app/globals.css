@@ -430,8 +430,9 @@ textarea {
 
 .review-layout {
   display: grid;
-  grid-template-columns: 72px minmax(0, 1fr) minmax(0, 1fr);
-  gap: 22px;
+  /* Scoring pane gets 10% more width — visual dominance without layout drama */
+  grid-template-columns: 66px minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 20px;
   align-items: start;
 }
 
@@ -617,6 +618,47 @@ textarea {
   white-space: pre-line;
   line-height: 1.6;
   font-size: 1.15rem;
+}
+
+.review-collapsible {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.review-collapsible summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  user-select: none;
+}
+
+.review-collapsible summary::-webkit-details-marker {
+  display: none;
+}
+
+.review-collapsible summary h2 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.collapsible-chevron {
+  font-size: 0.62rem;
+  color: #475569;
+  transition: transform 0.15s ease;
+  display: inline-block;
+}
+
+details[open].review-collapsible .collapsible-chevron {
+  transform: rotate(90deg);
+}
+
+.review-collapsible .body-block {
+  margin-top: 10px;
 }
 
 .case-nav-actions {

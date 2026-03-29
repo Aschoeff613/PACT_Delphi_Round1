@@ -102,10 +102,12 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
               <p className="body-block">{content.task_definition}</p>
             </section>
 
-            <section>
-              <h2>Example scenarios</h2>
+            <details className="review-collapsible">
+              <summary>
+                <h2>Example scenarios <span className="collapsible-chevron">▶</span></h2>
+              </summary>
               <p className="body-block">{content.scenario}</p>
-            </section>
+            </details>
           </div>
 
           <div className="case-nav-actions">
