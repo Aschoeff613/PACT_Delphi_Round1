@@ -22,7 +22,7 @@ const questions = [
   },
   {
     key: "performance_variability",
-    title: "Performance Variability / Saturation",
+    title: "Practice Variability (Saturation)",
     help: "How much do providers vary in their performance on this task?",
     low: "Providers converge on the same approach with near-universal accuracy",
     high: "Wide practice variation; reasonable clinicians frequently disagree or diverge"
@@ -172,7 +172,7 @@ export function ReviewPanel({
           checked={state.marked_for_discussion}
           onChange={(event) => update({ marked_for_discussion: event.target.checked })}
         />
-        <span>Mark for discussion in the follow-up round</span>
+        <span>Flag for panel discussion</span>
       </label>
 
       <div className="panel-nav-actions">

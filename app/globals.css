@@ -836,9 +836,9 @@ textarea {
   overflow: visible;
   text-align: center;
   white-space: nowrap;
-  font-size: 0.62rem;
-  color: #4a5568;
-  font-weight: 600;
+  font-size: 0.75rem;
+  color: #a0aec0;
+  font-weight: 700;
   transition: color 0.15s ease;
   line-height: 14px;
 }
