@@ -4,6 +4,7 @@ import { ReviewPanel } from "@/components/review-panel";
 import { ReviewProgress } from "@/components/review-progress";
 import { ReviewSidebar } from "@/components/review-sidebar";
 import { SectionTimer } from "@/components/section-timer";
+import { getCaseContent } from "@/lib/case-content";
 import { buildSectionProgress } from "@/lib/review-flow";
 import { getReviewerSession } from "@/lib/reviewer-session";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -29,7 +30,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
 
   const [{ data: sections }, { data: allCases }, { data: allRatings }] = await Promise.all([
     supabase.from("sections").select("id, name, slug, description"),
-    supabase.from("cases").select("id, section_id, title, scenario, task_definition, order_index").order("order_index"),
+    supabase.from("cases").select("id, section_id, title, order_index").order("order_index"),
     supabase
       .from("ratings")
       .select("id, case_id, clinical_relevance, performance_variability, ai_relevance, comment, marked_for_discussion")
@@ -94,12 +95,12 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
           <div className="review-copy">
             <section>
               <h2>Clinical task being judged</h2>
-              <p className="body-block">{activeCase.task_definition}</p>
+              <p className="body-block">{getCaseContent(slug, activeCase.order_index).task_definition}</p>
             </section>
 
             <section>
               <h2>Example Scenarios:</h2>
-              <p className="body-block">{activeCase.scenario}</p>
+              <p className="body-block">{getCaseContent(slug, activeCase.order_index).scenario}</p>
             </section>
           </div>
 
