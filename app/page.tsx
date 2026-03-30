@@ -26,7 +26,7 @@ export default async function HomePage() {
 
   const { data: ratings } = await supabase
     .from("ratings")
-    .select("case_id, clinical_relevance, performance_variability, ai_relevance")
+    .select("case_id, clinical_relevance, performance_gap, ai_relevance")
     .eq("reviewer_id", session.reviewer.id);
 
   const sectionsWithProgress = buildSectionProgress(sections ?? [], cases ?? [], ratings ?? []);

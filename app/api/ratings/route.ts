@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     p_reviewer_id: session.reviewer.id,
     p_case_id: payload.caseId,
     p_clinical_relevance: payload.clinical_relevance,
-    p_performance_variability: payload.performance_gap,
+    p_performance_gap: payload.performance_gap,
     p_ai_relevance: payload.ai_relevance,
     p_comment: payload.comment || null,
     p_marked_for_discussion: payload.marked_for_discussion,
