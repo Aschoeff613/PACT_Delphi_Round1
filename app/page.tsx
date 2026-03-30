@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { CompletionBanner } from "@/components/completion-banner";
+import { SectionCompleteBanner } from "@/components/section-complete-banner";
 import { SectionCards } from "@/components/section-cards";
 import { buildSectionProgress } from "@/lib/review-flow";
 import { getReviewerSession } from "@/lib/reviewer-session";
@@ -32,10 +33,13 @@ export default async function HomePage() {
   const allComplete = sectionsWithProgress.length > 0 && sectionsWithProgress.every(
     (s) => s.progress.total > 0 && s.progress.completed === s.progress.total
   );
+  const anySectionComplete = sectionsWithProgress.some(
+    (s) => s.progress.total > 0 && s.progress.completed === s.progress.total
+  );
 
   return (
     <>
-      {allComplete ? <CompletionBanner /> : null}
+      {allComplete ? <CompletionBanner /> : anySectionComplete ? <SectionCompleteBanner /> : null}
       <section className="hero">
         <p className="hero-tagline">A benchmark for physician-AI teaming in high-stakes clinical tasks.</p>
         <p><strong>Instructions:</strong></p>

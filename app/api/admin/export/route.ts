@@ -52,7 +52,7 @@ export async function GET() {
     "case_title",
     "section_id",
     "clinical_relevance",
-    "performance_variability",
+    "performance_gap",  // exported as performance_gap, DB column is performance_variability
     "ai_relevance",
     "comment",
     "marked_for_discussion",

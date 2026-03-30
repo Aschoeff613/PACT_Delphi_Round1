@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 type RatingState = {
   clinical_relevance: number | null;
-  performance_variability: number | null;
+  performance_gap: number | null;
   ai_relevance: number | null;
   comment: string;
   marked_for_discussion: boolean;
@@ -16,33 +16,49 @@ const questions = [
   {
     key: "clinical_relevance",
     title: "Clinical Relevance",
-    help: "How relevant and important is this clinical task to patient outcomes and care quality?",
-    low: "Minimal impact on patient outcomes; rarely encountered in practice",
-    high: "Critical to patient safety; routinely encountered in practice"
+    help: "How serious are the consequences when this task is performed poorly?",
+    low: "Errors cause minimal or reversible harm",
+    high: "Errors cause serious harm, disability, or death"
   },
   {
-    key: "performance_variability",
-    title: "Practice Variability / Saturation",
-    help: "How much do providers vary in their performance on this task?",
-    low: "Providers converge on the same approach with near-universal accuracy",
-    high: "Wide practice variation; reasonable clinicians frequently disagree or diverge"
+    key: "performance_gap",
+    title: "Physician Performance Gap",
+    help: "How often do physicians make incorrect decisions on this task?",
+    low: "Most physicians get this right most of the time",
+    high: "Errors common even among experts"
   },
   {
     key: "ai_relevance",
     title: "AI Augmentation Potential",
     help: "Could AI (including ML, LLMs, agents, etc.) meaningfully augment this task?",
-    low: "Task requires judgment AI cannot meaningfully replicate",
-    high: "Core information synthesis, pattern recognition, or retrieval where AI has demonstrated capability"
+    low: "Requires judgment AI cannot replicate",
+    high: "AI-demonstrated capability in this area"
   }
 ] as const;
 
-// Short labels shown inside each pill button
-const PILL_LABELS: Record<number, string> = {
-  1: "Very Low",
-  2: "Low",
-  3: "Moderate",
-  4: "High",
-  5: "Very High"
+// Short labels shown inside each pill button — per dimension
+const PILL_LABELS: Record<string, Record<number, string>> = {
+  clinical_relevance: {
+    1: "Very Low",
+    2: "Low",
+    3: "Moderate",
+    4: "High",
+    5: "Very High"
+  },
+  performance_gap: {
+    1: "Rarely wrong",
+    2: "Occasionally wrong",
+    3: "Moderate error rate",
+    4: "Frequently wrong",
+    5: "Errors are the norm"
+  },
+  ai_relevance: {
+    1: "AI unlikely to help",
+    2: "Marginal AI value",
+    3: "Moderate AI value",
+    4: "Clear AI benefit",
+    5: "AI core to this task"
+  }
 };
 
 export function ReviewPanel({
@@ -72,7 +88,7 @@ export function ReviewPanel({
   const isCompleted = useMemo(() => {
     return [
       state.clinical_relevance,
-      state.performance_variability,
+      state.performance_gap,
       state.ai_relevance
     ].every((value) => value !== null);
   }, [state]);
@@ -150,7 +166,6 @@ export function ReviewPanel({
                 />
                 <span className="pill-inner">
                   <span className="pill-num">{n}</span>
-                  <span className="pill-label">{PILL_LABELS[n]}</span>
                 </span>
               </label>
             ))}

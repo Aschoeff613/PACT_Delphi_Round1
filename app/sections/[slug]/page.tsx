@@ -102,7 +102,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
               <p className="body-block">{content.task_definition}</p>
             </section>
 
-            <details className="review-collapsible">
+            <details className="review-collapsible" open>
               <summary>
                 <h2>Example scenarios <span className="collapsible-chevron">▶</span></h2>
               </summary>
@@ -125,7 +125,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
           caseId={activeCase.id}
           initial={{
             clinical_relevance: activeRating?.clinical_relevance ?? null,
-            performance_variability: activeRating?.performance_variability ?? null,
+            performance_gap: activeRating?.performance_variability ?? null,
             ai_relevance: activeRating?.ai_relevance ?? null,
             comment: activeRating?.comment ?? "",
             marked_for_discussion: activeRating?.marked_for_discussion ?? false
