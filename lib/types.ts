@@ -1,26 +1,5 @@
 export type SectionName = "Management" | "Communication" | "Diagnostic";
 
-export type Profile = {
-  id: string;
-  email: string;
-  display_name: string | null;
-  affiliation_title: string | null;
-  institution: string | null;
-  title: string | null;
-  role: "reviewer" | "admin";
-};
-
-export type Reviewer = {
-  id: string;
-  code: string;
-  display_name: string;
-  last_name: string;
-  email: string | null;
-  institution: string | null;
-  title: string | null;
-  role: "reviewer" | "admin";
-  locked_at: string | null;
-};
 
 export type Section = {
   id: string;
@@ -38,14 +17,6 @@ export type SectionWithProgress = Section & {
   locked: boolean;
 };
 
-export type CaseRecord = {
-  id: string;
-  section_id: string;
-  title: string;
-  scenario: string;
-  task_definition: string;
-  order_index: number;
-};
 
 export type Rating = {
   id: string;
