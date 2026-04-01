@@ -139,7 +139,7 @@ export function CompletionBanner() {
         <div className="completion-celebration-emoji">🎉</div>
         <h2>Thank you for completing your ratings!</h2>
         <p>Your expert input across all three sections has been saved. We deeply appreciate your time and clinical expertise in helping build PACTBench.</p>
-        <p className="completion-sub">If you have additional thoughts, you can still revisit any section or merge review at any time.</p>
+        <p className="completion-sub">If you have additional thoughts, you can still revisit any section at any time.</p>
       </div>
     </div>
   );
