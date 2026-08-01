@@ -6,7 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 type Payload = {
   caseId: string;
   clinical_relevance: number | null;
-  performance_gap: number | null;
+  benchmarkability: number | null;
   ai_relevance: number | null;
   comment: string;
   marked_for_discussion: boolean;
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
   const payload = (await request.json()) as Payload;
   const isComplete = [
     payload.clinical_relevance,
-    payload.performance_gap,
+    payload.benchmarkability,
     payload.ai_relevance
   ].every((value) => value !== null);
 
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     p_reviewer_id: session.reviewer.id,
     p_case_id: payload.caseId,
     p_clinical_relevance: payload.clinical_relevance,
-    p_performance_gap: payload.performance_gap,
+    p_benchmarkability: payload.benchmarkability,
     p_ai_relevance: payload.ai_relevance,
     p_comment: payload.comment || null,
     p_marked_for_discussion: payload.marked_for_discussion,

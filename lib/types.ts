@@ -24,7 +24,7 @@ export type Rating = {
   reviewer_id: string | null;
   case_id: string;
   clinical_relevance: number | null;
-  performance_gap: number | null;
+  benchmarkability: number | null;
   ai_relevance: number | null;
   comment: string | null;
   marked_for_discussion: boolean;

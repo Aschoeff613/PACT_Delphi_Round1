@@ -7,7 +7,11 @@ const HEARTBEAT_INTERVAL_MS = 30_000; // flush every 30 seconds
 export function SectionTimer({ sectionId }: { sectionId: string }) {
   const accumulatedRef = useRef(0);
   const lastTickRef = useRef<number>(Date.now());
-  const activeRef = useRef(!document.hidden);
+  // Client components still render on the server, where `document` does not
+  // exist — reading it during the initial render 500s the page on a direct
+  // load or hard refresh. Assume active, then sync from the real value in the
+  // effect below, which only ever runs in the browser.
+  const activeRef = useRef(true);
 
   async function flush() {
     const delta = accumulatedRef.current;
@@ -26,6 +30,12 @@ export function SectionTimer({ sectionId }: { sectionId: string }) {
   }
 
   useEffect(() => {
+    // Now in the browser: adopt the real visibility state, and restart the
+    // clock so the server-render-to-hydration gap is not counted as review
+    // time (it also covers a page opened in a background tab).
+    activeRef.current = !document.hidden;
+    lastTickRef.current = Date.now();
+
     // Accumulate active seconds every second
     const ticker = window.setInterval(() => {
       if (!activeRef.current) {

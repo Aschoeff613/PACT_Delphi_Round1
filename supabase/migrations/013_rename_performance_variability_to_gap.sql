@@ -43,6 +43,13 @@ as $$
 $$;
 
 -- Update the save_reviewer_rating RPC function
+-- Postgres cannot rename an input parameter via CREATE OR REPLACE
+-- (p_performance_variability -> p_performance_gap), so drop the old
+-- signature first. Required for this migration to apply to a fresh database.
+drop function if exists public.save_reviewer_rating(
+  uuid, uuid, smallint, smallint, smallint, text, boolean, timestamptz
+);
+
 create or replace function public.save_reviewer_rating(
   p_reviewer_id uuid,
   p_case_id uuid,

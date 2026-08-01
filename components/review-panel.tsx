@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
 type RatingState = {
   clinical_relevance: number | null;
-  performance_gap: number | null;
+  benchmarkability: number | null;
   ai_relevance: number | null;
   comment: string;
   marked_for_discussion: boolean;
@@ -21,11 +21,11 @@ const questions = [
     high: "Errors cause serious harm, disability, or death"
   },
   {
-    key: "performance_gap",
-    title: "Physician Performance Gap",
-    help: "How often do physicians make incorrect decisions on this task?",
-    low: "Most physicians get this right most of the time",
-    high: "Errors common even among experts"
+    key: "benchmarkability",
+    title: "Benchmarkability / Saturation",
+    help: "Could this task be turned into a meaningful benchmark, or is measurable performance already saturated?",
+    low: "Already saturated, or cannot be measured cleanly",
+    high: "Cleanly measurable with real headroom left"
   },
   {
     key: "ai_relevance",
@@ -36,8 +36,13 @@ const questions = [
   }
 ] as const;
 
-// Short labels shown inside each pill button — per dimension
-const PILL_LABELS: Record<string, Record<number, string>> = {
+const SCALE = [1, 2, 3, 4, 5] as const;
+const SCALE_MIN = SCALE[0];
+const SCALE_MAX = SCALE[SCALE.length - 1];
+const SCALE_MID = Math.ceil((SCALE_MIN + SCALE_MAX) / 2);
+
+// Short label for the currently selected value — per dimension
+const VALUE_LABELS: Record<string, Record<number, string>> = {
   clinical_relevance: {
     1: "Very Low",
     2: "Low",
@@ -45,12 +50,12 @@ const PILL_LABELS: Record<string, Record<number, string>> = {
     4: "High",
     5: "Very High"
   },
-  performance_gap: {
-    1: "Rarely wrong",
-    2: "Occasionally wrong",
-    3: "Moderate error rate",
-    4: "Frequently wrong",
-    5: "Errors are the norm"
+  benchmarkability: {
+    1: "Saturated / unmeasurable",
+    2: "Weak benchmark target",
+    3: "Moderate headroom",
+    4: "Strong benchmark target",
+    5: "Ideal benchmark target"
   },
   ai_relevance: {
     1: "AI unlikely to help",
@@ -88,7 +93,7 @@ export function ReviewPanel({
   const isCompleted = useMemo(() => {
     return [
       state.clinical_relevance,
-      state.performance_gap,
+      state.benchmarkability,
       state.ai_relevance
     ].every((value) => value !== null);
   }, [state]);
@@ -137,46 +142,73 @@ export function ReviewPanel({
       </div>
 
       {/* ── Scoring cards ──────────────────────────────────────────── */}
-      {questions.map((question) => (
-        <div key={question.key} className="likert-block">
-          <div className="likert-copy">
-            <h3>{question.title}</h3>
-            <p>{question.help}</p>
-          </div>
+      {questions.map((question) => {
+        const value = state[question.key];
+        const rated = value !== null;
+        // An unrated slider parks at the midpoint but reads as unset, so a
+        // reviewer is never shown a score they did not actually choose.
+        const shown = value ?? SCALE_MID;
 
-          {/* Radio-pill rating control — 1–5 scale */}
-          <div
-            className="rating-pills"
-            role="radiogroup"
-            aria-label={`${question.title} rating`}
-          >
-            {([1, 2, 3, 4, 5] as const).map((n) => (
-              <label
-                key={n}
-                className={cn("rating-pill", state[question.key] === n && "selected")}
-              >
-                <input
-                  type="radio"
-                  name={`${caseId}-${question.key}`}
-                  value={n}
-                  checked={state[question.key] === n}
-                  onChange={() =>
-                    update({ [question.key]: n as Partial<RatingState>[typeof question.key] } as Partial<RatingState>)
+        return (
+          <div key={question.key} className="likert-block">
+            <div className="likert-copy">
+              <h3>{question.title}</h3>
+              <p>{question.help}</p>
+            </div>
+
+            {/* Slider rating control — 1–5 scale */}
+            <div
+              className={cn("rating-slider", !rated && "unrated")}
+              style={
+                {
+                  "--fill": `${((shown - SCALE_MIN) / (SCALE_MAX - SCALE_MIN)) * 100}%`
+                } as CSSProperties
+              }
+            >
+              <input
+                type="range"
+                min={SCALE_MIN}
+                max={SCALE_MAX}
+                step={1}
+                value={shown}
+                aria-label={`${question.title} rating`}
+                aria-valuetext={rated ? `${shown} — ${VALUE_LABELS[question.key]?.[shown]}` : "Not yet rated"}
+                onChange={(event) =>
+                  update({
+                    [question.key]: Number(event.target.value)
+                  } as unknown as Partial<RatingState>)
+                }
+                // Clicking the handle without moving it still counts as a choice.
+                onPointerUp={() => {
+                  if (!rated) {
+                    update({ [question.key]: shown } as unknown as Partial<RatingState>);
                   }
-                />
-                <span className="pill-inner">
-                  <span className="pill-num">{n}</span>
-                </span>
-              </label>
-            ))}
-          </div>
+                }}
+              />
 
-          <div className="slider-anchors">
-            <span className="slider-end-label">{question.low}</span>
-            <span className="slider-end-label slider-end-right">{question.high}</span>
+              <div className="rating-slider-readout">
+                {SCALE.map((n) => (
+                  <span
+                    key={n}
+                    className={cn("slider-tick", rated && shown === n && "active")}
+                  >
+                    {n}
+                  </span>
+                ))}
+              </div>
+
+              <div className="slider-value-label">
+                {rated ? VALUE_LABELS[question.key]?.[shown] : "Not yet rated — drag or click to score"}
+              </div>
+            </div>
+
+            <div className="slider-anchors">
+              <span className="slider-end-label">{question.low}</span>
+              <span className="slider-end-label slider-end-right">{question.high}</span>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       {/* ── Comments / flag footer ─────────────────────────────────── */}
       <div className="panel-footer">

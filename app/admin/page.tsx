@@ -17,7 +17,7 @@ export default async function AdminPage() {
     admin.from("reviewers").select("id"),
     admin.from("sections").select("id, name"),
     admin.from("cases").select("id, section_id"),
-    admin.from("ratings").select("reviewer_id, case_id, clinical_relevance, performance_gap, ai_relevance, completed_at")
+    admin.from("ratings").select("reviewer_id, case_id, clinical_relevance, benchmarkability, ai_relevance, completed_at")
   ]);
 
   const ratingsCount = (ratings ?? []).length;

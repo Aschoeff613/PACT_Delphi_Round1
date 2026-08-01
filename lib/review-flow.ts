@@ -11,7 +11,7 @@ type CaseLite = {
 type RatingLite = {
   case_id: string;
   clinical_relevance: number | null;
-  performance_gap: number | null;
+  benchmarkability: number | null;
   ai_relevance: number | null;
 };
 
@@ -33,19 +33,15 @@ export function buildSectionProgress(
     (left, right) => SECTION_ORDER.indexOf(left.slug as (typeof SECTION_ORDER)[number]) - SECTION_ORDER.indexOf(right.slug as (typeof SECTION_ORDER)[number])
   );
 
-  let priorSectionsComplete = true;
-
   return sortedSections.map((section) => {
     const sectionCases = casesBySection.get(section.id) ?? [];
     const completed = sectionCases.filter((item) => caseStatus(ratingsByCase.get(item.id) ?? null) === "completed").length;
     const total = sectionCases.length;
     const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
-    const isComplete = total > 0 && completed === total;
-    const locked = !priorSectionsComplete;
 
-    if (!isComplete) {
-      priorSectionsComplete = false;
-    }
+    // All three domains are open from the start — reviewers may work
+    // Management, Diagnostic Reasoning, and Communication in any order.
+    const locked = false;
 
     return {
       ...section,

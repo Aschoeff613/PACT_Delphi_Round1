@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Expert Case Review PACT — a modified Delphi-style expert case rating platform where reviewers score clinical cases across three sections (Management, Communication, Diagnostic) using three 1–6 Likert scales: Clinical Relevance, Performance Variability, and AI Augmentation Potential.
+Expert Case Review PACT — a modified Delphi-style expert rating platform where reviewers score **cognitive tasks** (not individual patient vignettes) across three sections (Management, Diagnostic Reasoning, Communication) using three 1–5 Likert sliders: Clinical Relevance, Benchmarkability / Saturation, and AI Augmentation Potential.
+
+Each task is graded on its own page and grounded by two worked example cases — one Emergency Department, one Primary Care. The task set is the V3 taxonomy: 17 tasks (5 Management, 7 Diagnostic, 5 Communication), sourced from `High Risk Cognitive Tasks (1).xlsx` sheet `V3 Task List` and hardcoded in `lib/case-content.ts`.
 
 ## Commands
 
@@ -51,7 +53,7 @@ All styles in `app/globals.css` (plain CSS, no Tailwind or CSS-in-JS). The revie
 
 ### Section Progression
 
-Sections unlock sequentially — a reviewer must complete all cases in one section before the next unlocks. Logic in `lib/review-flow.ts`.
+All three sections are open from the start — reviewers may work Management, Diagnostic Reasoning, and Communication in any order. Logic in `lib/review-flow.ts` (`locked` is always false).
 
 ## Environment Variables
 

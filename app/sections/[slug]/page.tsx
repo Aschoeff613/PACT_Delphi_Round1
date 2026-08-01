@@ -33,7 +33,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
     supabase.from("cases").select("id, section_id, title, order_index").order("order_index"),
     supabase
       .from("ratings")
-      .select("id, case_id, clinical_relevance, performance_gap, ai_relevance, comment, marked_for_discussion")
+      .select("id, case_id, clinical_relevance, benchmarkability, ai_relevance, comment, marked_for_discussion")
       .eq("reviewer_id", session.reviewer.id)
   ]);
 
@@ -99,24 +99,27 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
           <div className="review-copy">
             <section>
               <h2>Cognitive task</h2>
+              {content.cognitive_demand && (
+                <p className="task-demand">{content.cognitive_demand}</p>
+              )}
               <p className="body-block">{content.task_definition}</p>
             </section>
 
             <details className="review-collapsible" open>
               <summary>
-                <h2>Example scenarios <span className="collapsible-chevron">▶</span></h2>
+                <h2>Example cases <span className="collapsible-chevron">▶</span></h2>
               </summary>
-              <p className="body-block">{content.scenario}</p>
+              <div className="example-cases">
+                <article className="example-case">
+                  <h3 className="example-case-label">Emergency Department</h3>
+                  <p className="body-block">{content.example_ed}</p>
+                </article>
+                <article className="example-case">
+                  <h3 className="example-case-label">Primary Care</h3>
+                  <p className="body-block">{content.example_primary_care}</p>
+                </article>
+              </div>
             </details>
-          </div>
-
-          <div className="case-nav-actions">
-            {previousCase ? (
-              <Link className="ghost-button" href={`/sections/${slug}?case=${previousCase.id}`}>
-                Previous task
-              </Link>
-            ) : <span />}
-            <span />
           </div>
         </main>
 
@@ -125,7 +128,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
           caseId={activeCase.id}
           initial={{
             clinical_relevance: activeRating?.clinical_relevance ?? null,
-            performance_gap: activeRating?.performance_gap ?? null,
+            benchmarkability: activeRating?.benchmarkability ?? null,
             ai_relevance: activeRating?.ai_relevance ?? null,
             comment: activeRating?.comment ?? "",
             marked_for_discussion: activeRating?.marked_for_discussion ?? false
