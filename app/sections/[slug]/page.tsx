@@ -33,7 +33,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
     supabase.from("cases").select("id, section_id, title, order_index").order("order_index"),
     supabase
       .from("ratings")
-      .select("id, case_id, clinical_relevance, benchmarkability, ai_relevance, comment, marked_for_discussion")
+      .select("id, case_id, clinical_relevance, performance_variance, ai_relevance, comment, marked_for_discussion")
       .eq("reviewer_id", session.reviewer.id)
   ]);
 
@@ -102,6 +102,9 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
               {content.cognitive_demand && (
                 <p className="task-demand">{content.cognitive_demand}</p>
               )}
+              {content.guiding_question && (
+                <p className="task-question">{content.guiding_question}</p>
+              )}
               <p className="body-block">{content.task_definition}</p>
             </section>
 
@@ -128,7 +131,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
           caseId={activeCase.id}
           initial={{
             clinical_relevance: activeRating?.clinical_relevance ?? null,
-            benchmarkability: activeRating?.benchmarkability ?? null,
+            performance_variance: activeRating?.performance_variance ?? null,
             ai_relevance: activeRating?.ai_relevance ?? null,
             comment: activeRating?.comment ?? "",
             marked_for_discussion: activeRating?.marked_for_discussion ?? false

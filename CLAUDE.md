@@ -4,9 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Expert Case Review PACT — a modified Delphi-style expert rating platform where reviewers score **cognitive tasks** (not individual patient vignettes) across three sections (Management, Diagnostic Reasoning, Communication) using three 1–5 Likert sliders: Clinical Relevance, Benchmarkability / Saturation, and AI Augmentation Potential.
+Expert Case Review PACT — a modified Delphi-style expert rating platform where reviewers score **cognitive tasks** (not individual patient vignettes) across three sections (Management, Diagnostic Reasoning, Communication) using three 1–5 Likert scales, each rendered as a row of radio buttons: Clinical Relevance, Performance Variance, and AI Augmentation Potential.
 
-Each task is graded on its own page and grounded by two worked example cases — one Emergency Department, one Primary Care. The task set is the V3 taxonomy: 17 tasks (5 Management, 7 Diagnostic, 5 Communication), sourced from `High Risk Cognitive Tasks (1).xlsx` sheet `V3 Task List` and hardcoded in `lib/case-content.ts`.
+Performance Variance asks how much competent clinicians would disagree about the right path forward on the task. It replaced the earlier "Benchmarkability / Saturation" dimension in migration 021, which also renamed `ratings.benchmarkability` to `performance_variance` — the two ask different questions, so ratings are not comparable across that boundary.
+
+Each task is graded on its own page and grounded by two case seeds — one Emergency Department, one Primary Care. A seed is a one-sentence clinical situation plus the decision the clinician must make out loud; it is not a full vignette.
+
+The task set is the **Erasmus V6 taxonomy**: 17 constructs (6 Management, 8 Diagnostic, 3 Communication), sourced from `PACT_EMC_V6_Tasks_CaseSeeds_1.xlsx` sheet `Cognitive Tasks` (ARPA/PACT Round-1 Codebook V6, 4 Aug 2026) and hardcoded in `lib/case-content.ts`. Section assignment follows the Stanford V3 task each V6 construct maps to in `PACT_Taxonomy_Crosswalk_EMC.xlsx`; constructs 5 and 17 have no Stanford equivalent, so their section is a judgment call. `task_code` carries the codebook number (`T1`–`T17`) and is load-bearing — each construct's `construct_boundary` refers to its neighbours by it ("drifted to task 4"). `construct_boundary`, `case_format`, and `status` are stored but not yet rendered. Superseded V3 ratings are preserved in `ratings_archive_v3`.
 
 ## Commands
 

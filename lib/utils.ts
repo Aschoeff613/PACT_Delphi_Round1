@@ -4,13 +4,13 @@ export function cn(...classes: Array<string | false | null | undefined>) {
 
 export function caseStatus(rating?: {
   clinical_relevance: number | null;
-  benchmarkability: number | null;
+  performance_variance: number | null;
   ai_relevance: number | null;
 } | null): "not_started" | "in_progress" | "completed" {
   if (!rating) return "not_started";
   const values = [
     rating.clinical_relevance,
-    rating.benchmarkability,
+    rating.performance_variance,
     rating.ai_relevance
   ];
   const answered = values.filter((value) => value !== null).length;

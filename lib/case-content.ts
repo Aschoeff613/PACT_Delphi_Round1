@@ -2,186 +2,262 @@
  * Hardcoded cognitive-task content, so every environment shows identical
  * wording regardless of database state.
  *
- * Source of truth: "High Risk Cognitive Tasks (1).xlsx", sheet "V3 Task List"
- * (17 tasks: 5 Management, 7 Diagnostic, 5 Communication).
+ * Source of truth: "PACT_EMC_V6_Tasks_CaseSeeds_1.xlsx", sheet "Cognitive Tasks"
+ * (ARPA/PACT Round-1 Codebook V6, 4 Aug 2026) — 17 Erasmus V6 constructs.
  *
- * Each task carries two worked examples — one Emergency Department, one
- * Primary Care — to give the cognitive task clinical grounding.
+ * Sections follow the Stanford V3 task(s) each V6 construct maps to in
+ * "PACT_Taxonomy_Crosswalk_EMC.xlsx": Diagnostic 8, Management 6,
+ * Communication 3. Tasks 5 and 17 have no Stanford equivalent, so their
+ * section is a judgment call (noted inline).
+ *
+ * task_code carries the codebook number, which is load-bearing:
+ * construct_boundary refers to sibling constructs by it ("drifted to task 4").
+ *
+ * Each task carries two case seeds — one Emergency Department, one Primary
+ * Care. A seed is a one-sentence clinical situation plus the decision the
+ * clinician must make out loud; it is not a full vignette.
  */
 
 export type CaseContent = {
-  /** Taxonomy code, e.g. "M1", "D4", "C3". */
+  /** Codebook number, e.g. "T1", "T15". */
   task_code: string;
-  /** Cognitive demand subcategory this task belongs to. */
+  /** The question this construct answers, shown under the task title. */
+  guiding_question: string;
+  /** Legacy V3 field; empty for V6, which has no subcategory layer. */
   cognitive_demand: string;
-  /** Clinical cluster(s) the task maps onto. */
+  /** Stanford V4 crosswalk note for this construct. */
   cluster: string;
   task_definition: string;
   /** Worked example set in the Emergency Department. */
   example_ed: string;
   /** Worked example set in Primary Care. */
   example_primary_care: string;
+  /**
+   * What this construct is NOT. Load-bearing per the V6 workbook: every seed
+   * drifts toward a neighbouring construct if left unchecked.
+   */
+  construct_boundary: string;
+  /** Case format the construct requires (6 of 17 cannot be static vignettes). */
+  case_format: string;
+  /** "V5 core" or "New in V6". */
+  status: string;
 };
 
 // Keyed by `${sectionSlug}:${orderIndex}`
 const CASE_CONTENT: Record<string, CaseContent> = {
-  // ── Management ────────────────────────────────────────────────────────
+  // ── Management ────────────────────────────────────────────────────
   "management:0": {
-    task_code: "M1",
-    cognitive_demand: "High-variability treatment selection",
-    cluster: "1 - Medication Management / 6 - Guideline and Evidence Conflict Navigation",
-    task_definition: "Choosing among multiple defensible treatment options where the evidence is weak, conflicting, or absent for the patient in front of you. Spans empiric antimicrobial selection against local resistance and allergy history, opioid prescribing balanced against addiction and diversion risk, and adjudicating guidelines that directly conflict across co-existing conditions. Requires integration of patient-specific factors, local context, calibrated guideline application, and explicit weighing of competing risks with no single authoritative answer available.",
-    example_ed: "70yo with chronic UTIs and prior fluoroquinolone resistance — which empiric regimen? Kidney stone patient with pain controlled — prescribe opioids for home, how many, and check the PDMP? Septic patient with CHF where resuscitation conflicts with volume restriction; beta-blocker for AFib RVR in acute asthma.",
-    example_primary_care: "65yo with cellulitis failing first-line oral antibiotics — escalate outpatient, IV, or refer to ED? Chronic low back pain patient requesting a refill with multiple prescribers on the PDMP. CHF patient with CKD and diabetes where cardiology, nephrology, and endocrine each want a different call on an SGLT2 inhibitor.",
+    task_code: "T2",
+    guiding_question: "What or whom next, and what do I spend on it?",
+    cognitive_demand: "",
+    cluster: "Partly inside Stanford V4 M2 (disposition and resource allocation)",
+    task_definition: "Deciding what or whom to deal with next, and how to spend limited resources: attention, time, beds, staff, equipment, when several things compete.",
+    example_ed: "Four patients need attention at once: chest pain awaiting a second troponin, a laceration, a septic-appearing nursing home transfer, and a new intoxicated patient. One CT slot has opened and the nurse is asking who gets the room.",
+    example_primary_care: "The session is running 40 minutes behind with a double-booked slot, a same-day add-on for chest tightness, and two urgent portal messages. Decide what gets attention in the next hour and what is deferred.",
+    construct_boundary: "Not the severity read that feeds the ranking (task 1), and not the clinician managing their own memory or attention (task 14).",
+    case_format: "Multi-patient board state, not a single-patient vignette",
+    status: "V5 core",
   },
   "management:1": {
-    task_code: "M2",
-    cognitive_demand: "Therapeutic inertia resistance",
-    cluster: "1 - Medication Management",
-    task_definition: "Overcoming the cognitive and social bias toward inaction in chronic disease management when adjustment is indicated — both escalating therapy in patients not at goal and deprescribing in polypharmacy. Requires active override of status quo bias, accurate estimation of treatment benefit, integration of acute context against chronic trajectory, and reconciliation of incomplete or conflicting medication records while filtering clinically significant alerts from noise and navigating ownership ambiguity across prescribers.",
-    example_ed: "Patient in ED with BP in the 170s, chronically on antihypertensives, negative workup — increase amlodipine before discharge? 60yo admitted with confusion on diuretics, benzodiazepines, and sleeping pills — which medications are contributing, and what should be held?",
-    example_primary_care: "Diabetic with A1c 8.5 on metformin and glipizide — add a third agent vs. insulin, guideline vs. patient preference? 80yo on 14 medications at a wellness visit with statin plus new muscle pain — deprescribing cascade risk.",
+    task_code: "T9",
+    guiding_question: "What do I know, or need to look up?",
+    cognitive_demand: "",
+    cluster: "Partly inside Stanford V4 M3 (guideline-discordant selection)",
+    task_definition: "Retrieving stored medical knowledge, rules or standards out of memory, or looking them up, and applying them to the case, including recognising the edge of what they know.",
+    example_ed: "A patient on apixaban has an intracranial bleed. Retrieve the reversal agent, the dose and the time window, and say where recall stops and an outside resource is needed.",
+    example_primary_care: "A 67-year-old asks about pneumococcal vaccination, with a prior dose at 63. Recall the current interval and sequence, and recognise that the schedule has changed and needs looking up.",
+    construct_boundary: "Not looking up the patient's own chart data (task 3 or 8). A passage that merely sounds medical, with nothing retrieved and no gap named, does not qualify.",
+    case_format: "Static vignette; the edge-of-knowledge admission is the scoreable behaviour",
+    status: "V5 core",
   },
   "management:2": {
-    task_code: "M3",
-    cognitive_demand: "Disposition and resource allocation",
-    cluster: "4 - Clinical Resource and Utilization Decisions",
-    task_definition: "Allocating patients, tests, and clinician attention under competing demands, risk tolerance constraints, and resource limitations. Spans determining level of care for borderline presentations where both admission and discharge are defensible, declining low-yield testing despite medicolegal and patient-expectation pressure, and dynamically reprioritizing across multiple patients when time or diagnostic capacity is constrained. Requires threshold calibration, risk-benefit estimation, and resistance to both over- and under-triage without losing track of deferred needs.",
-    example_ed: "CHF exacerbation, sat 91% on room air, chronically ill, poor follow-up — admit or discharge with close follow-up? Does this pediatric bronchiolitis patient really need a chest X-ray? Multiple patients boarding with one CT slot — who needs frequent reassessment?",
-    example_primary_care: "28yo with migraine history and new hand sensory changes, normal office neuro exam — send to ED for stroke evaluation? Back pain under 6 weeks with no red flags and a patient insisting on MRI. End of day with 3 abnormal-lab callbacks and limited time — prioritize by severity.",
+    task_code: "T10",
+    guiding_question: "Where is this heading, and what does that change now?",
+    cognitive_demand: "",
+    cluster: "Stanford V4 M4 (anticipatory recognition of deterioration), which is narrower",
+    task_definition: "Looking ahead to the likely trajectory, endpoint and next moves, and letting that forecast change what they do now, before reaching a decision.",
+    example_ed: "A probable small bowel obstruction, not yet confirmed. Plan forward: if the CT confirms it, surgery is called and a nasogastric tube goes in now; if it is negative, the patient goes home. Stage the present work against both branches.",
+    example_primary_care: "A patient with early dementia is still driving and living alone. Project the next 12 months, decide this is a two-part visit, and start capacity and safety groundwork before it is clinically forced.",
+    construct_boundary: "Two or more futures must still be open. One settled endpoint, or a single pending result that will decide it, is task 11. Parking a to-do so as not to forget it is task 14.",
+    case_format: "Static vignette with an explicit branch point; score the if-then structure",
+    status: "V5 core",
   },
   "management:3": {
-    task_code: "M4",
-    cognitive_demand: "Anticipatory and preemptive reasoning",
-    cluster: "7 - Anticipatory Clinical Reasoning",
-    task_definition: "Projecting the clinical trajectory forward to act on early signals before formal intervention criteria are met — integrating subtle vital sign trends, behavioral change, and experiential pattern recognition that fall below algorithmic thresholds. Requires pattern extrapolation, acting on probabilistic concern rather than certainty, and resistance to both wait-and-see inertia and anchoring on a currently stable presentation.",
-    example_ed: "Patient with borderline vitals who is \"looking sick\" but not yet meeting sepsis criteria — the experienced clinician starts antibiotics early. Setting up for intubation on a patient not yet in respiratory failure but trending toward it.",
-    example_primary_care: "Stable CHF patient whose weight is trending up 2 lbs/week for 3 weeks — intervene now or wait for symptoms? Diabetic with gradually worsening renal function — when to refer to nephrology?",
+    task_code: "T11",
+    guiding_question: "Where does this patient end up, and what settles it?",
+    cognitive_demand: "",
+    cluster: "Stanford V4 M2 (disposition under uncertainty). Closest one-to-one match in the set",
+    task_definition: "Integrating everything into a settled endpoint and the plan that gets there, including deciding whether a test or action is worth doing because of whether the result would change anything.",
+    example_ed: "Flank pain with a known stone history, pain controlled and creatinine normal. Settle that the disposition hangs on the urinalysis alone, and say whether the CT is worth doing given that the result would not change management.",
+    example_primary_care: "Three weeks of low back pain with no red flags, and the patient is asking for an MRI. Decide whether the scan would change the plan, commit to a management course with a follow-up interval, and close the visit on that reasoning.",
+    construct_boundary: "The reasoning toward the endpoint must be present, not the endpoint alone. Predicting a likely endpoint before the data is back is task 10. Bare words like admit or discharge are not codable.",
+    case_format: "Static vignette with a bounded choice set. Current DispoBench architecture applies directly",
+    status: "V5 core",
   },
   "management:4": {
-    task_code: "M5",
-    cognitive_demand: "Values and goals integration",
-    cluster: "5 - Goals of Care and Patient Preference Alignment / 10 - Capacity, Consent, and Patient Autonomy",
-    task_definition: "Aligning clinical decisions with patient preferences, values, and decisional capacity when the patient cannot fully participate in real-time decision-making. Spans acting on documented goals during acute deterioration under time pressure with ambiguous directives and family disagreement, and assessing capacity while simultaneously communicating risk to obtain valid consent. Requires surrogate reasoning, ethical judgment, integration of prior expressed preferences, and resistance to defaulting to aggressive intervention.",
-    example_ed: "DNR/DNI patient with reversible hypoxia — is BiPAP consistent with goals when the family disagrees? Intoxicated patient needing laceration repair — capacity to consent, proceed, wait, or find a surrogate?",
-    example_primary_care: "Advanced cancer patient with new pneumonia — aggressive treatment vs. comfort per prior discussions, with unclear documentation. Early dementia patient consenting to colonoscopy who understands the benefits but not the risks.",
+    task_code: "T16",
+    guiding_question: "Can this even happen here, and if not, how?",
+    cognitive_demand: "",
+    cluster: "Gap. No Stanford construct at any version",
+    task_definition: "Judging whether a plan can actually be carried out, given coverage, cost, appointment supply, service hours and who controls access, and working out a route around the block when there is one.",
+    example_ed: "The patient needs an MRI this hospital does not perform overnight, and the on-call neurosurgeon covers a second site. Reason about boarding until morning, transferring, or managing without the study.",
+    example_primary_care: "The guideline-preferred agent is not covered, prior authorisation takes three weeks, and the next endocrinology appointment is five months out. Work out which available route actually gets treatment started.",
+    construct_boundary: "The constraint must belong to the system, not the patient. What the patient can afford or get to is task 12. Cost as one factor in choosing between treatments is task 11.",
+    case_format: "Static vignette plus a local system context block, which makes ground truth site-specific",
+    status: "New in V6",
   },
-
-  // ── Diagnostic ────────────────────────────────────────────────────────
+  "management:5": {
+    task_code: "T17",
+    guiding_question: "What is this visit about, and what else goes in it?",
+    cognitive_demand: "",
+    cluster: "Gap. No Stanford construct at any version; scope selection is presupposed by every Stanford task",
+    task_definition: "Fixing what this contact is meant to be for and which of the patient's problems it will carry, including deciding to open something the patient did not come in about, or deliberately to leave something out.",
+    example_ed: "A frequent attender arrives with five active complaints and a request for a work note. Fix which single problem this visit will carry, and say why the others are not opened today.",
+    example_primary_care: "The visit is booked as routine diabetes and hypertension follow-up. At minute 12 the patient mentions exertional chest tightness. Re-frame what this contact is now for, and what is left for next time.",
+    construct_boundary: "The subject is what the contact will cover, not what information to look for (task 3) or where the illness is heading (task 10). Deciding a problem belongs to someone else is task 13.",
+    case_format: "Multi-turn, with the agenda emerging mid-visit rather than stated in the stem",
+    status: "New in V6",
+  },
+  // ── Diagnostic Reasoning ──────────────────────────────────────────
   "diagnostic:0": {
-    task_code: "D1",
-    cognitive_demand: "Probabilistic risk stratification",
-    cluster: "2 - High-Risk Diagnostic Rule Out / Uncertainty Management",
-    task_definition: "Estimating pre- and post-test probability and setting explicit action thresholds for undifferentiated presentations where neither intervention nor safe discharge is obvious. Spans chest pain, suspected PE, and altered mental status: synthesizing history, exam, ECG, biomarker kinetics, and risk scores; selecting a diagnostic pathway; and calibrating the asymmetric consequences of over- and under-testing. Requires Bayesian reasoning, calibrated confidence, and a broad differential that prioritizes reversible and immediately dangerous causes.",
-    example_ed: "45yo M with atypical chest pain, normal ECG, mildly elevated troponin — ACS vs. dissection vs. musculoskeletal; admit, obs, or discharge? 32yo F post-partum with pleuritic pain and tachycardia, elevated D-dimer — CT-PA vs. V/Q? 30yo with substance use history, severely confused, abnormal vitals — toxic-metabolic vs. CNS infection vs. structural; CT, LP?",
-    example_primary_care: "55yo F with exertional chest tightness and 2 cardiac risk factors, normal office ECG — ED vs. outpatient stress test vs. reassurance? 32yo F on OCPs with shortness of breath — send to the ER? 75yo brought by family for progressive confusion over 2 weeks — UTI vs. medication effect vs. early dementia vs. subdural?",
+    task_code: "T1",
+    guiding_question: "How sick is this person? (a state, judged fast)",
+    cognitive_demand: "",
+    cluster: "Partly inside Stanford V4 D1 (high-risk rule-out); no standalone equivalent",
+    task_definition: "A fast, holistic judgement of how unwell someone is, or how likely they are to get worse, formed at a glance rather than reasoned out. This first read sets the tempo of everything after it.",
+    example_ed: "A 78-year-old arrives by ambulance for generalized weakness with a heart rate of 96 and a normal blood pressure. From the doorway she is grey, quiet and not tracking. State how sick she is, and how fast this needs to move, before any data returns.",
+    example_primary_care: "A same-day walk-in with two days of vomiting has normal recorded vital signs but looks exhausted and cannot sit up on the exam table. State how unwell she is right now, and whether that changes the tempo of the visit.",
+    construct_boundary: "Not a diagnosis and not an action. If the case forces a differential it has drifted to task 4; if it forces an admit or order decision it has drifted to task 11 or 2.",
+    case_format: "Static vignette, but the stem must stop before data arrives",
+    status: "V5 core",
   },
   "diagnostic:1": {
-    task_code: "D2",
-    cognitive_demand: "Time-critical pattern recognition",
-    cluster: "2 - High-Risk Diagnostic Rule Out / Uncertainty Management",
-    task_definition: "Matching an evolving, atypical presentation to a known high-stakes prototype under time pressure, where delay directly worsens outcome. Spans early sepsis in vague or incomplete symptom profiles and stroke — particularly posterior circulation — whose symptoms overlap with benign conditions. Draws on System 1 pattern recognition across subtle physiologic signals while requiring the clinician to override premature reassurance from a normal initial exam or unmet formal criteria.",
-    example_ed: "Immunocompromised patient with WBC elevation but minimal symptoms and borderline vitals. Elderly female with nystagmus, NIH 0, and dizziness with equivocal CT — activate stroke protocol and TNK?",
-    example_primary_care: "Elderly diabetic with fatigue and mild confusion, afebrile — UTI vs. early sepsis vs. dehydration; send to ED? 65yo M with 2 days of episodic vertigo and gait unsteadiness — TIA vs. BPPV, and how urgent is imaging?",
+    task_code: "T3",
+    guiding_question: "What do I look for, and when have I got enough?",
+    cognitive_demand: "",
+    cluster: "Partly inside Stanford V4 D2 (degraded or overloaded information); steering the search is uncovered",
+    task_definition: "Steering their own search for information: what to look for or ask about, how to get it, and when there is enough to move on.",
+    example_ed: "Ninety seconds of chart time before entering the room for an 82-year-old with syncope. Choose which few items to pull, prior ECGs, medication list, or last echocardiogram, and say when that is enough to start.",
+    example_primary_care: "Three months of fatigue with an open history to take in a 15-minute visit. Choose the questions that would actually separate thyroid disease, anaemia, depression and sleep apnoea, and stop when the picture is sufficient to order from.",
+    construct_boundary: "Not whether the information can be trusted (task 7), and not putting already-accepted pieces together (task 8). Stopping the search is this task; an unresolvable unknown is task 5.",
+    case_format: "Interactive or agentic: the physician must be able to request items one at a time",
+    status: "V5 core",
   },
   "diagnostic:2": {
-    task_code: "D3",
-    cognitive_demand: "Signal extraction under noise",
-    cluster: "8 - Diagnosis Under Data Constraints",
-    task_definition: "Reaching sound diagnostic conclusions when the information environment is degraded at either extreme — too little signal or too much noise. Spans reasoning toward a diagnosis without key tests, interpreting studies stripped of clinical context, and extracting actionable findings from records saturated with copy-forward text and low-value alerts. Requires selective attention, active filtering, calibrating confidence to what is genuinely unknown versus merely unmeasured, and resistance to alert fatigue.",
-    example_ed: "CT without contrast due to allergy — can you rule out PE? An ECG arrives in triage with no clinical context: NSTEMI vs. STEMI vs. baseline changes? Chest pain patient whose chart holds 400+ largely copied-forward notes, one of which documents prior cocaine use and QTc prolongation.",
-    example_primary_care: "Patient declines bloodwork for religious reasons — assessing anemia clinically only. Abnormal mammogram with implants and prior radiation — true positive vs. artifact? Complex patient with 12 years of records where the prior colonoscopy and pathology report must be located to set a screening interval.",
+    task_code: "T4",
+    guiding_question: "What explains this, and how do the candidates move?",
+    cognitive_demand: "",
+    cluster: "Stanford V4 D1 and D4",
+    task_definition: "Building a set of possible explanations for the presentation and moving them up or down as evidence arrives, including noticing when the case does not fit the expected pattern.",
+    example_ed: "A 45-year-old with epigastric pain and diaphoresis has a normal ECG and a lipase of 60. ACS, pancreatitis, biliary disease and aortic pathology all remain live, and each returning result should move the ranking.",
+    example_primary_care: "A 60-year-old reports six weeks of cough without fever. Post-viral cough, ACE inhibitor effect, reflux, asthma and malignancy are all in play, and a normal chest film moves some candidates without clearing the list.",
+    construct_boundary: "Not the overall sick or not-sick read (task 1), and not keeping a diagnosis alive because of the danger of missing it (task 6).",
+    case_format: "Static vignette with staged result release, or multi-turn",
+    status: "V5 core",
   },
   "diagnostic:3": {
-    task_code: "D4",
-    cognitive_demand: "Premature closure resistance",
-    cluster: "9 - Cognitive Bias and Diagnostic Error Resistance",
-    task_definition: "Maintaining an active, complete diagnostic search after an initial plausible explanation has been identified — resisting the metacognitive pull to stop once there is \"an answer.\" Requires deliberate activation of System 2 reasoning, structured self-monitoring, and explicit consideration of co-existing conditions, secondary injuries, and findings left unexplained by the leading hypothesis.",
-    example_ed: "Trauma patient with an obvious femur fracture — missed C-spine injury because attention locked onto the dramatic finding. Polysubstance overdose treated for opioids, missing a concurrent benzodiazepine ingestion.",
-    example_primary_care: "Patient with confirmed UTI and dysuria — missed concurrent diabetes from the glucose on the UA. Treating depression while missing the hypothyroidism producing the same symptoms.",
+    task_code: "T5",
+    guiding_question: "What cannot be known, and what do I do anyway?",
+    cognitive_demand: "",
+    cluster: "Gap. No Stanford construct at any version; uncertainty appears only as a modifier",
+    task_definition: "Explicitly acknowledging what is unknown and choosing a next step that either tolerates it or resolves it, instead of forcing an answer too early. Includes safety-netting and setting trip-wires.",
+    example_ed: "A 30-year-old with 12 hours of periumbilical pain has an equivocal ultrasound and a normal white count. Appendicitis cannot be excluded tonight. State that, and set the return threshold and recheck interval that make discharge acceptable.",
+    example_primary_care: "An isolated mildly elevated alkaline phosphatase in an asymptomatic patient. State that the cause is not knowable yet, leave it deliberately alone, and name the repeat interval and the value that would trigger a workup.",
+    construct_boundary: "The unknown must be stated explicitly. If the case moves a diagnosis up or down it is task 4; if the point is how dangerous a miss would be it is task 6.",
+    case_format: "Static vignette with a free-text plan; score the presence and adequacy of the trip-wire",
+    status: "V5 core",
   },
   "diagnostic:4": {
-    task_code: "D5",
-    cognitive_demand: "Anchoring and belief updating",
-    cluster: "9 - Cognitive Bias and Diagnostic Error Resistance",
-    task_definition: "Recognizing when a working diagnosis is no longer supported by accumulating evidence and actively revising or abandoning it. Requires metacognitive awareness of anchoring, willingness to reframe the clinical picture from scratch, active hypothesis disconfirmation rather than passive data accumulation, and the ability to separate meaningful contradictory signal from noise.",
-    example_ed: "Patient admitted for CHF exacerbation not improving with diuresis — actually a PE. EMS report says \"psych patient\" — actually hypoglycemic.",
-    example_primary_care: "Treating recurrent \"GERD\" for months — actually eosinophilic esophagitis. Attributing fatigue to depression — actually new-onset anemia from colon cancer.",
+    task_code: "T6",
+    guiding_question: "How bad is it to be wrong here?",
+    cognitive_demand: "",
+    cluster: "Stanford V4 D1 contains it as threshold-setting",
+    task_definition: "Weighing how dangerous it would be to be wrong: keeping cannot-miss diagnoses in play, matching how aggressive to be to the worst case, and locating their own threshold for acting.",
+    example_ed: "A 55-year-old with atypical chest pain and a HEART score of 3. Reason explicitly about how low the acceptable miss rate for ACS is, and whether that threshold justifies observation rather than discharge.",
+    example_primary_care: "A 40-year-old with a new severe headache and a normal neurological examination. Weigh how bad a missed subarachnoid haemorrhage would be against the yield and cost of sending her to the ED today, and say where your own threshold sits.",
+    construct_boundary: "Risk words alone do not qualify. Something must be balanced, and the subject is how bad it is to be wrong, not how likely the diagnosis is (task 4).",
+    case_format: "Static vignette; elicit the threshold explicitly, not just the disposition",
+    status: "V5 core",
   },
   "diagnostic:5": {
-    task_code: "D6",
-    cognitive_demand: "Multi-source data integration",
-    cluster: "9 - Cognitive Bias and Diagnostic Error Resistance",
-    task_definition: "Synthesizing conflicting signals across history, physical exam, labs, and imaging when they point toward different diagnoses, without prematurely defaulting to any single data source. Requires explicit weighting of evidence quality, adjudication of discordant information, tolerance for irresolvable ambiguity, and transparent reasoning about which signals carry more weight and why.",
-    example_ed: "Chest pain patient: history suggests ACS, troponin borderline, ECG shows non-specific changes, CT-A shows no PE but an incidental finding. Which signal dominates?",
-    example_primary_care: "Patient reports feeling fine, A1c is 11, home glucometer readings are all normal. Which data do you trust — device malfunction, non-adherence, or lab error?",
+    task_code: "T7",
+    guiding_question: "Can I trust this source, and what is missing?",
+    cognitive_demand: "",
+    cluster: "Partly inside Stanford V4 D2; explicit weighting of evidence quality only",
+    task_definition: "Judging whether incoming information can be trusted and whether anything is missing: checking the source, deciding whether to verify it first-hand, and flagging the gap.",
+    example_ed: "The only history for an unresponsive patient runs from a bystander to a paramedic to a triage note. Judge how much of that chain to believe, and decide what to re-check personally before committing.",
+    example_primary_care: "An outside note asserts a normal stress test 14 months ago, with no report attached and no images available. Decide whether that assertion can carry weight, or whether the study must be obtained or repeated.",
+    construct_boundary: "Not information simply acknowledged as missing (task 5), and not trusting a person's judgement or work (task 13). This is about the source, not the person.",
+    case_format: "Static vignette with a deliberately seeded unreliable source",
+    status: "V5 core",
   },
   "diagnostic:6": {
-    task_code: "D7",
-    cognitive_demand: "Longitudinal trajectory tracking",
-    cluster: "3 - Longitudinal Care Tracking",
-    task_definition: "Maintaining awareness of results, findings, and clinical state across time and care transitions until they reach resolution. Spans ensuring abnormal or actionable results trigger a response and are tracked to closure; interpreting ambiguous cancer screening results and setting follow-up intensity; and determining workup and ownership for unexpected incidental findings. Requires prospective memory, closed-loop tracking, establishing ownership in fragmented systems, and recognizing deviation from an expected trajectory.",
-    example_ed: "Aortic dilation to 5.2cm on CT — when can the patient follow up, and who tracks it? Incidental lung nodule on trauma CT — Fleischner application. CT abdomen for appendicitis reveals an adrenal mass — workup now or outpatient, and who owns it?",
-    example_primary_care: "Mildly elevated liver enzymes on routine labs — repeat vs. workup, and ensuring the patient returns. PSA 5.2 in a 62yo — biopsy vs. repeat vs. MRI. Chest X-ray for cough shows a small pleural effusion — pursue or monitor?",
+    task_code: "T8",
+    guiding_question: "What do these accepted pieces mean together?",
+    cognitive_demand: "",
+    cluster: "Stanford V4 D4 contains integration inside the merged bias-resistance definition",
+    task_definition: "Relating several pieces of already-accepted information to each other, to this patient's own normal, and to how they were before, to reach one reading.",
+    example_ed: "An 85-year-old's blood pressure is 104/60, normal by population standards but 40 points below his own documented baseline, and his creatinine is up from a value six months ago. Read the pieces against each other and against him.",
+    example_primary_care: "The patient feels well, her A1c is 11.2, her home glucose log shows values in the 120s, and last year's A1c was 6.8. All three are accepted as accurate. Produce one coherent reading.",
+    construct_boundary: "Not judging whether a source is trustworthy (task 7), and not ranking candidate diagnoses (task 4). The pieces are already accepted.",
+    case_format: "Static vignette; baseline and prior values must be supplied in the stem",
+    status: "V5 core",
   },
-
-  // ── Communication ─────────────────────────────────────────────────────
+  "diagnostic:7": {
+    task_code: "T15",
+    guiding_question: "Across all my patients, is everything moving and is anything missed?",
+    cognitive_demand: "",
+    cluster: "Partly inside Stanford V4 D3 (closed-loop tracking), at a different scope and timescale",
+    task_definition: "Going back over the whole set of patients mid-shift: re-triaging across patients by acuity, tracking that orders and results are moving, and confirming nothing has been missed.",
+    example_ed: "Mid-shift sweep of the whole board. Bed 16 has blood running and imaging back, bed 36's labs are reassuring and she can wait, bed 22 has been waiting two hours on an ultrasound that has not moved. Confirm nothing on the list has been dropped.",
+    example_primary_care: "End-of-week panel sweep: three abnormal results with no documented follow-up, two referrals never scheduled, and one biopsy result still outstanding. Establish what has stalled and what needs action now.",
+    construct_boundary: "Set-level, not one patient. A single endpoint decision is task 11, a single severity read is task 1, and choosing who to see next as an attention call is task 2.",
+    case_format: "Board or panel simulation with a state list. Cannot be a single-patient vignette",
+    status: "V5 core",
+  },
+  // ── Communication ─────────────────────────────────────────────────
   "communication:0": {
-    task_code: "C1",
-    cognitive_demand: "High-stakes disclosure",
-    cluster: "11 - High-Stakes Patient Disclosure",
-    task_definition: "Delivering a serious new diagnosis, prognosis, or end-of-life framing while simultaneously supporting emotional processing and moving the patient or family toward an immediate, documented decision. Requires emotional regulation, calibrated information framing, and patient-centered sequencing under time pressure, while holding prognostic uncertainty without retreating into false reassurance or defaulting to aggressive intervention.",
-    example_ed: "Telling a patient their CT shows a large mass concerning for cancer and framing next steps in the ED. Critically ill patient with family at the bedside: full code vs. comfort care, with minutes mattering for an ICU bed.",
-    example_primary_care: "Delivering a new cancer diagnosis at a follow-up visit — treatment options, prognosis, referrals. Initiating an advance directive conversation with an advanced COPD patient at an annual visit.",
+    task_code: "T12",
+    guiding_question: "What does this patient need, and how do I say it?",
+    cognitive_demand: "",
+    cluster: "Stanford V4 C1 (serious-news disclosure) and C2 (adaptive communication)",
+    task_definition: "Folding the patient's situation, goals, understanding, preferences and feelings into the reasoning and the plan, and deliberately shaping how things are communicated to fit them.",
+    example_ed: "New atrial fibrillation in a patient who lives alone, has limited health literacy and no reliable transport. Let that situation change both the anticoagulation choice and the way return precautions are explained.",
+    example_primary_care: "An 82-year-old with an abnormal screening result says she does not want anything invasive. Work out what she actually understands and fears, and let that reshape both the plan and how the result is delivered.",
+    construct_boundary: "Not talking to other clinicians (task 13), and not judging whether the patient's account is reliable (task 7). Noticing a communication habit without changing anything is task 14.",
+    case_format: "Multi-turn simulated patient. Autograder concordance is the open question here",
+    status: "V5 core",
   },
   "communication:1": {
-    task_code: "C2",
-    cognitive_demand: "Adaptive patient communication",
-    cluster: "12 - Patient Communication Adaptation",
-    task_definition: "Adjusting clinical communication — in both directions — to the patient's actual health literacy, language, cognitive state, or emotional capacity. Spans explaining diagnosis, treatment, and uncertainty in a way that produces genuine understanding rather than surface acknowledgment, and eliciting a reliable history from patients whose communication is impaired, including triangulation across collateral sources and records. Requires real-time assessment of comprehension and flexible strategy without patronizing the patient.",
-    example_ed: "Discharging a patient with new AFib, anticoagulation instructions, and return precautions. \"Your CT was negative but I can't fully rule out appendicitis — here's what to come back for.\" Elderly patient with dementia arriving via EMS with altered behavior and no family available.",
-    example_primary_care: "Explaining insulin initiation to a patient with limited English proficiency and a 4th-grade reading level. \"It's probably nothing, but we need to follow it\" for an indeterminate lung nodule. Non-English-speaking diabetic with no interpreter available at a follow-up visit.",
+    task_code: "T13",
+    guiding_question: "What is someone else thinking, doing, or responsible for?",
+    cognitive_demand: "",
+    cluster: "Stanford V4 C3 (handoff and consult) covers the transfer half; entrustment is uncovered",
+    task_definition: "Reasoning about and through other people: how far to trust a colleague, what to do themselves versus hand over, checking someone else's plan, passing on responsibility, and coordinating with other services.",
+    example_ed: "A second-year resident presents a syncope patient as low risk. Judge how far to trust this particular resident, decide whether to see the patient personally, and check the plan for what a resident at that level would likely miss.",
+    example_primary_care: "A patient's insulin was adjusted by an endocrinologist last week, and the assistant has recorded home readings that conflict with that plan. Work out who owns the prescription now and what the specialist is actually planning.",
+    construct_boundary: "A colleague being present in the case is not enough. Trust, delegation, the worth of that person's information, or who is responsible must be at issue. Trusting a document or monitor is task 7.",
+    case_format: "Multi-turn simulated colleague, with the trainee's level specified in the stem",
+    status: "V5 core",
   },
   "communication:2": {
-    task_code: "C3",
-    cognitive_demand: "Working memory and task resumption",
-    cluster: "13 - Cognitive Load and Workflow Integrity",
-    task_definition: "Preserving clinical accuracy when workflow works against attention — returning to a complex task after an interruption without losing context or skipping steps, and applying clinical judgment at scale to asynchronous, patient-initiated messages arriving in a channel not designed for acute decision-making. Requires prospective encoding of task state, reliable resumption strategies, and error-checking after every context shift.",
-    example_ed: "Calculating medication dosing for a critical patient, interrupted by a code blue, then returning to the original task. Post-discharge portal message: \"My pain is worse since discharge yesterday and now I have a fever.\"",
-    example_primary_care: "Reviewing a complex lab panel, interrupted by an urgent phone call, resuming the review and missing an abnormal value. Patient messages at 9pm: \"I've had chest pain all day but didn't want to bother you\" — seen the next morning.",
+    task_code: "T14",
+    guiding_question: "What is my own mind doing, and how do I manage it?",
+    cognitive_demand: "",
+    cluster: "Gap in object. No Stanford category takes the clinician's own cognition as its object; D4 covers two named biases only",
+    task_definition: "Watching their own reasoning, confidence and biases, and deliberately managing their own attention, effort and memory.",
+    example_ed: "The handoff framed the patient as a psych patient. Name that the framing has anchored you, deliberately reopen the case, and set a reminder so the pending glucose is not lost across the next interruption.",
+    example_primary_care: "At the end of a long session, notice your own engagement dropping and that you are rushing a complex patient. Slow down deliberately and re-check the medication list you have just reviewed.",
+    construct_boundary: "Only the clinician's own mind. Spending external resources or ranking patients is task 2. Handing work to someone else is task 13. Frustration at what others are doing is neither.",
+    case_format: "Seeded anchor plus think-aloud. Weakest autograder prospect in the set",
+    status: "V5 core",
   },
-  "communication:3": {
-    task_code: "C4",
-    cognitive_demand: "High-stakes information transfer",
-    cluster: "14 - High-Stakes Information Transfer",
-    task_definition: "Compressing and transmitting critical clinical information across providers, teams, or care settings so that the receiving clinician develops an accurate shared mental model of the situation, the decisions already made, and the specific question being asked. Requires anticipating information gaps, framing urgency appropriately, and verifying comprehension rather than assuming that transmission equals understanding.",
-    example_ed: "Shift-change handoff where pending labs and vital sign trends are lost because nothing was documented in the EHR. Calling cardiology for an NSTEMI consult — your concern is RV strain, their mental model is \"another troponin leak.\"",
-    example_primary_care: "End-of-day handoff of a deteriorating patient to a covering physician with a critical lab still pending. Referring elevated liver enzymes to GI worried about autoimmune hepatitis; GI assumes fatty liver and schedules routine follow-up in 3 months.",
-  },
-  "communication:4": {
-    task_code: "C5",
-    cognitive_demand: "Automation bias management",
-    cluster: "15 - Human-AI Teaming",
-    task_definition: "Evaluating AI- or algorithm-generated recommendations against independent clinical judgment — determining when to defer, when to override, and how to weight algorithmic confidence against experiential pattern recognition. Requires metacognitive monitoring of one's own reasoning, calibrated trust in AI output, and working awareness of the model's likely failure modes, resisting both over-reliance and reflexive rejection.",
-    example_ed: "AI suggests a PE workup for a patient you've assessed as low-risk. Override, or order the CT-PA?",
-    example_primary_care: "AI flags a medication interaction you've been prescribing around for years without issue. Change practice, or dismiss the alert?",
-  },
-
 };
 
-/**
- * Look up content for a task by section slug and order index.
- */
 export function getCaseContent(sectionSlug: string, orderIndex: number): CaseContent {
-  const key = `${sectionSlug}:${orderIndex}`;
-  return (
-    CASE_CONTENT[key] ?? {
-      task_code: "",
-      cognitive_demand: "",
-      cluster: "",
-      task_definition: "",
-      example_ed: "",
-      example_primary_care: "",
-    }
-  );
+  const content = CASE_CONTENT[`${sectionSlug}:${orderIndex}`];
+  if (!content) {
+    throw new Error(`No case content for ${sectionSlug}:${orderIndex}`);
+  }
+  return content;
 }

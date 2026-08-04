@@ -11,7 +11,7 @@ type CaseLite = {
 type RatingLite = {
   case_id: string;
   clinical_relevance: number | null;
-  benchmarkability: number | null;
+  performance_variance: number | null;
   ai_relevance: number | null;
 };
 
