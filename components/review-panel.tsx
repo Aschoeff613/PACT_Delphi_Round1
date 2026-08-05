@@ -16,9 +16,11 @@ const questions = [
   {
     key: "clinical_relevance",
     title: "Clinical Relevance",
-    help: "How serious are the consequences when this task is performed poorly?",
-    low: "Errors cause minimal or reversible harm",
-    high: "Errors cause serious harm, disability, or death"
+    help: "How important is this task to everyday clinical care?",
+    // Anchors track the question above: this scale measures how central the
+    // task is to routine practice, not how badly it goes wrong.
+    low: "Peripheral — rarely arises in everyday practice",
+    high: "Central — part of everyday clinical care"
   },
   {
     key: "performance_variance",
