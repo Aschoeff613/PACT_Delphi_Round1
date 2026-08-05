@@ -68,6 +68,35 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY
 SUPABASE_SERVICE_ROLE_KEY
 ```
 
+## Deployment
+
+Vercel project `expert-case-review-pact`, auto-deploying `main`.
+
+**Commits must be authored with an email registered to a GitHub account.** This
+project has Git author verification enabled, so a push whose commit email is not
+on a GitHub account is rejected with:
+
+```
+Deployment Blocked — The deployment was blocked because the commit email
+<address> could not be matched to a GitHub account.
+```
+
+The build never starts, `vercel ls` reports the deployment's status as `UNKNOWN`
+rather than `Error`, and the production domain silently keeps serving the
+previous deployment — so the site looks stale with no obvious failure. Check
+`git config user.email` against the GitHub account before pushing.
+`<id>+<login>@users.noreply.github.com` always matches.
+
+Deployment URLs (`*-<hash>-<team>.vercel.app`) sit behind Vercel Deployment
+Protection and redirect to a Vercel login, so they cannot be smoke-tested
+unauthenticated. Test the production domain, or run the app locally against the
+hosted database.
+
+Schema changes are **not** applied by the build (`build` is plain `next build`).
+Migrations in `supabase/migrations/` must be run against the target database
+separately, before deploying code that depends on them. `supabase/bootstrap_v6.sql`
+stands up a brand-new project in one paste.
+
 ## Key Conventions
 
 - Path alias: `@/*` maps to project root (configured in tsconfig.json)
