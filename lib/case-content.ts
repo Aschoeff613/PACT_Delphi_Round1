@@ -5,13 +5,15 @@
  * Source of truth: "PACT_EMC_V6_Tasks_CaseSeeds_1.xlsx", sheet "Cognitive Tasks"
  * (ARPA/PACT Round-1 Codebook V6, 4 Aug 2026) — 17 Erasmus V6 constructs.
  *
- * Sections follow the Stanford V3 task(s) each V6 construct maps to in
- * "PACT_Taxonomy_Crosswalk_EMC.xlsx": Diagnostic 8, Management 6,
- * Communication 3. Tasks 5 and 17 have no Stanford equivalent, so their
- * section is a judgment call (noted inline).
+ * All 17 live in ONE section. The former Management / Diagnostic Reasoning /
+ * Communication split was dropped in migration 023: the V6 constructs cut
+ * across those categories (e.g. metacognitive self-regulation is neither
+ * diagnosis nor communication), so forcing them into three buckets misdescribed
+ * the taxonomy.
  *
- * task_code carries the codebook number, which is load-bearing:
- * construct_boundary refers to sibling constructs by it ("drifted to task 4").
+ * Order is codebook order, T1 through T17, at order_index 0..16. Keep it:
+ * task_code numbering is load-bearing, since construct_boundary refers to
+ * sibling constructs by it ("drifted to task 4").
  *
  * Each task carries two case seeds — one Emergency Department, one Primary
  * Care. A seed is a one-sentence clinical situation plus the decision the
@@ -43,83 +45,12 @@ export type CaseContent = {
   status: string;
 };
 
+/** The single section every task belongs to. */
+export const TASK_SECTION_SLUG = "all-tasks";
+
 // Keyed by `${sectionSlug}:${orderIndex}`
 const CASE_CONTENT: Record<string, CaseContent> = {
-  // ── Management ────────────────────────────────────────────────────
-  "management:0": {
-    task_code: "T2",
-    guiding_question: "What or whom next, and what do I spend on it?",
-    cognitive_demand: "",
-    cluster: "Partly inside Stanford V4 M2 (disposition and resource allocation)",
-    task_definition: "Deciding what or whom to deal with next, and how to spend limited resources: attention, time, beds, staff, equipment, when several things compete.",
-    example_ed: "Four patients need attention at once: chest pain awaiting a second troponin, a laceration, a septic-appearing nursing home transfer, and a new intoxicated patient. One CT slot has opened and the nurse is asking who gets the room.",
-    example_primary_care: "The session is running 40 minutes behind with a double-booked slot, a same-day add-on for chest tightness, and two urgent portal messages. Decide what gets attention in the next hour and what is deferred.",
-    construct_boundary: "Not the severity read that feeds the ranking (task 1), and not the clinician managing their own memory or attention (task 14).",
-    case_format: "Multi-patient board state, not a single-patient vignette",
-    status: "V5 core",
-  },
-  "management:1": {
-    task_code: "T9",
-    guiding_question: "What do I know, or need to look up?",
-    cognitive_demand: "",
-    cluster: "Partly inside Stanford V4 M3 (guideline-discordant selection)",
-    task_definition: "Retrieving stored medical knowledge, rules or standards out of memory, or looking them up, and applying them to the case, including recognising the edge of what they know.",
-    example_ed: "A patient on apixaban has an intracranial bleed. Retrieve the reversal agent, the dose and the time window, and say where recall stops and an outside resource is needed.",
-    example_primary_care: "A 67-year-old asks about pneumococcal vaccination, with a prior dose at 63. Recall the current interval and sequence, and recognise that the schedule has changed and needs looking up.",
-    construct_boundary: "Not looking up the patient's own chart data (task 3 or 8). A passage that merely sounds medical, with nothing retrieved and no gap named, does not qualify.",
-    case_format: "Static vignette; the edge-of-knowledge admission is the scoreable behaviour",
-    status: "V5 core",
-  },
-  "management:2": {
-    task_code: "T10",
-    guiding_question: "Where is this heading, and what does that change now?",
-    cognitive_demand: "",
-    cluster: "Stanford V4 M4 (anticipatory recognition of deterioration), which is narrower",
-    task_definition: "Looking ahead to the likely trajectory, endpoint and next moves, and letting that forecast change what they do now, before reaching a decision.",
-    example_ed: "A probable small bowel obstruction, not yet confirmed. Plan forward: if the CT confirms it, surgery is called and a nasogastric tube goes in now; if it is negative, the patient goes home. Stage the present work against both branches.",
-    example_primary_care: "A patient with early dementia is still driving and living alone. Project the next 12 months, decide this is a two-part visit, and start capacity and safety groundwork before it is clinically forced.",
-    construct_boundary: "Two or more futures must still be open. One settled endpoint, or a single pending result that will decide it, is task 11. Parking a to-do so as not to forget it is task 14.",
-    case_format: "Static vignette with an explicit branch point; score the if-then structure",
-    status: "V5 core",
-  },
-  "management:3": {
-    task_code: "T11",
-    guiding_question: "Where does this patient end up, and what settles it?",
-    cognitive_demand: "",
-    cluster: "Stanford V4 M2 (disposition under uncertainty). Closest one-to-one match in the set",
-    task_definition: "Integrating everything into a settled endpoint and the plan that gets there, including deciding whether a test or action is worth doing because of whether the result would change anything.",
-    example_ed: "Flank pain with a known stone history, pain controlled and creatinine normal. Settle that the disposition hangs on the urinalysis alone, and say whether the CT is worth doing given that the result would not change management.",
-    example_primary_care: "Three weeks of low back pain with no red flags, and the patient is asking for an MRI. Decide whether the scan would change the plan, commit to a management course with a follow-up interval, and close the visit on that reasoning.",
-    construct_boundary: "The reasoning toward the endpoint must be present, not the endpoint alone. Predicting a likely endpoint before the data is back is task 10. Bare words like admit or discharge are not codable.",
-    case_format: "Static vignette with a bounded choice set. Current DispoBench architecture applies directly",
-    status: "V5 core",
-  },
-  "management:4": {
-    task_code: "T16",
-    guiding_question: "Can this even happen here, and if not, how?",
-    cognitive_demand: "",
-    cluster: "Gap. No Stanford construct at any version",
-    task_definition: "Judging whether a plan can actually be carried out, given coverage, cost, appointment supply, service hours and who controls access, and working out a route around the block when there is one.",
-    example_ed: "The patient needs an MRI this hospital does not perform overnight, and the on-call neurosurgeon covers a second site. Reason about boarding until morning, transferring, or managing without the study.",
-    example_primary_care: "The guideline-preferred agent is not covered, prior authorisation takes three weeks, and the next endocrinology appointment is five months out. Work out which available route actually gets treatment started.",
-    construct_boundary: "The constraint must belong to the system, not the patient. What the patient can afford or get to is task 12. Cost as one factor in choosing between treatments is task 11.",
-    case_format: "Static vignette plus a local system context block, which makes ground truth site-specific",
-    status: "New in V6",
-  },
-  "management:5": {
-    task_code: "T17",
-    guiding_question: "What is this visit about, and what else goes in it?",
-    cognitive_demand: "",
-    cluster: "Gap. No Stanford construct at any version; scope selection is presupposed by every Stanford task",
-    task_definition: "Fixing what this contact is meant to be for and which of the patient's problems it will carry, including deciding to open something the patient did not come in about, or deliberately to leave something out.",
-    example_ed: "A frequent attender arrives with five active complaints and a request for a work note. Fix which single problem this visit will carry, and say why the others are not opened today.",
-    example_primary_care: "The visit is booked as routine diabetes and hypertension follow-up. At minute 12 the patient mentions exertional chest tightness. Re-frame what this contact is now for, and what is left for next time.",
-    construct_boundary: "The subject is what the contact will cover, not what information to look for (task 3) or where the illness is heading (task 10). Deciding a problem belongs to someone else is task 13.",
-    case_format: "Multi-turn, with the agenda emerging mid-visit rather than stated in the stem",
-    status: "New in V6",
-  },
-  // ── Diagnostic Reasoning ──────────────────────────────────────────
-  "diagnostic:0": {
+  "all-tasks:0": {
     task_code: "T1",
     guiding_question: "How sick is this person? (a state, judged fast)",
     cognitive_demand: "",
@@ -131,7 +62,19 @@ const CASE_CONTENT: Record<string, CaseContent> = {
     case_format: "Static vignette, but the stem must stop before data arrives",
     status: "V5 core",
   },
-  "diagnostic:1": {
+  "all-tasks:1": {
+    task_code: "T2",
+    guiding_question: "What or whom next, and what do I spend on it?",
+    cognitive_demand: "",
+    cluster: "Partly inside Stanford V4 M2 (disposition and resource allocation)",
+    task_definition: "Deciding what or whom to deal with next, and how to spend limited resources: attention, time, beds, staff, equipment, when several things compete.",
+    example_ed: "Four patients need attention at once: chest pain awaiting a second troponin, a laceration, a septic-appearing nursing home transfer, and a new intoxicated patient. One CT slot has opened and the nurse is asking who gets the room.",
+    example_primary_care: "The session is running 40 minutes behind with a double-booked slot, a same-day add-on for chest tightness, and two urgent portal messages. Decide what gets attention in the next hour and what is deferred.",
+    construct_boundary: "Not the severity read that feeds the ranking (task 1), and not the clinician managing their own memory or attention (task 14).",
+    case_format: "Multi-patient board state, not a single-patient vignette",
+    status: "V5 core",
+  },
+  "all-tasks:2": {
     task_code: "T3",
     guiding_question: "What do I look for, and when have I got enough?",
     cognitive_demand: "",
@@ -143,7 +86,7 @@ const CASE_CONTENT: Record<string, CaseContent> = {
     case_format: "Interactive or agentic: the physician must be able to request items one at a time",
     status: "V5 core",
   },
-  "diagnostic:2": {
+  "all-tasks:3": {
     task_code: "T4",
     guiding_question: "What explains this, and how do the candidates move?",
     cognitive_demand: "",
@@ -155,7 +98,7 @@ const CASE_CONTENT: Record<string, CaseContent> = {
     case_format: "Static vignette with staged result release, or multi-turn",
     status: "V5 core",
   },
-  "diagnostic:3": {
+  "all-tasks:4": {
     task_code: "T5",
     guiding_question: "What cannot be known, and what do I do anyway?",
     cognitive_demand: "",
@@ -167,7 +110,7 @@ const CASE_CONTENT: Record<string, CaseContent> = {
     case_format: "Static vignette with a free-text plan; score the presence and adequacy of the trip-wire",
     status: "V5 core",
   },
-  "diagnostic:4": {
+  "all-tasks:5": {
     task_code: "T6",
     guiding_question: "How bad is it to be wrong here?",
     cognitive_demand: "",
@@ -179,7 +122,7 @@ const CASE_CONTENT: Record<string, CaseContent> = {
     case_format: "Static vignette; elicit the threshold explicitly, not just the disposition",
     status: "V5 core",
   },
-  "diagnostic:5": {
+  "all-tasks:6": {
     task_code: "T7",
     guiding_question: "Can I trust this source, and what is missing?",
     cognitive_demand: "",
@@ -191,7 +134,7 @@ const CASE_CONTENT: Record<string, CaseContent> = {
     case_format: "Static vignette with a deliberately seeded unreliable source",
     status: "V5 core",
   },
-  "diagnostic:6": {
+  "all-tasks:7": {
     task_code: "T8",
     guiding_question: "What do these accepted pieces mean together?",
     cognitive_demand: "",
@@ -203,20 +146,43 @@ const CASE_CONTENT: Record<string, CaseContent> = {
     case_format: "Static vignette; baseline and prior values must be supplied in the stem",
     status: "V5 core",
   },
-  "diagnostic:7": {
-    task_code: "T15",
-    guiding_question: "Across all my patients, is everything moving and is anything missed?",
+  "all-tasks:8": {
+    task_code: "T9",
+    guiding_question: "What do I know, or need to look up?",
     cognitive_demand: "",
-    cluster: "Partly inside Stanford V4 D3 (closed-loop tracking), at a different scope and timescale",
-    task_definition: "Going back over the whole set of patients mid-shift: re-triaging across patients by acuity, tracking that orders and results are moving, and confirming nothing has been missed.",
-    example_ed: "Mid-shift sweep of the whole board. Bed 16 has blood running and imaging back, bed 36's labs are reassuring and she can wait, bed 22 has been waiting two hours on an ultrasound that has not moved. Confirm nothing on the list has been dropped.",
-    example_primary_care: "End-of-week panel sweep: three abnormal results with no documented follow-up, two referrals never scheduled, and one biopsy result still outstanding. Establish what has stalled and what needs action now.",
-    construct_boundary: "Set-level, not one patient. A single endpoint decision is task 11, a single severity read is task 1, and choosing who to see next as an attention call is task 2.",
-    case_format: "Board or panel simulation with a state list. Cannot be a single-patient vignette",
+    cluster: "Partly inside Stanford V4 M3 (guideline-discordant selection)",
+    task_definition: "Retrieving stored medical knowledge, rules or standards out of memory, or looking them up, and applying them to the case, including recognising the edge of what they know.",
+    example_ed: "A patient on apixaban has an intracranial bleed. Retrieve the reversal agent, the dose and the time window, and say where recall stops and an outside resource is needed.",
+    example_primary_care: "A 67-year-old asks about pneumococcal vaccination, with a prior dose at 63. Recall the current interval and sequence, and recognise that the schedule has changed and needs looking up.",
+    construct_boundary: "Not looking up the patient's own chart data (task 3 or 8). A passage that merely sounds medical, with nothing retrieved and no gap named, does not qualify.",
+    case_format: "Static vignette; the edge-of-knowledge admission is the scoreable behaviour",
     status: "V5 core",
   },
-  // ── Communication ─────────────────────────────────────────────────
-  "communication:0": {
+  "all-tasks:9": {
+    task_code: "T10",
+    guiding_question: "Where is this heading, and what does that change now?",
+    cognitive_demand: "",
+    cluster: "Stanford V4 M4 (anticipatory recognition of deterioration), which is narrower",
+    task_definition: "Looking ahead to the likely trajectory, endpoint and next moves, and letting that forecast change what they do now, before reaching a decision.",
+    example_ed: "A probable small bowel obstruction, not yet confirmed. Plan forward: if the CT confirms it, surgery is called and a nasogastric tube goes in now; if it is negative, the patient goes home. Stage the present work against both branches.",
+    example_primary_care: "A patient with early dementia is still driving and living alone. Project the next 12 months, decide this is a two-part visit, and start capacity and safety groundwork before it is clinically forced.",
+    construct_boundary: "Two or more futures must still be open. One settled endpoint, or a single pending result that will decide it, is task 11. Parking a to-do so as not to forget it is task 14.",
+    case_format: "Static vignette with an explicit branch point; score the if-then structure",
+    status: "V5 core",
+  },
+  "all-tasks:10": {
+    task_code: "T11",
+    guiding_question: "Where does this patient end up, and what settles it?",
+    cognitive_demand: "",
+    cluster: "Stanford V4 M2 (disposition under uncertainty). Closest one-to-one match in the set",
+    task_definition: "Integrating everything into a settled endpoint and the plan that gets there, including deciding whether a test or action is worth doing because of whether the result would change anything.",
+    example_ed: "Flank pain with a known stone history, pain controlled and creatinine normal. Settle that the disposition hangs on the urinalysis alone, and say whether the CT is worth doing given that the result would not change management.",
+    example_primary_care: "Three weeks of low back pain with no red flags, and the patient is asking for an MRI. Decide whether the scan would change the plan, commit to a management course with a follow-up interval, and close the visit on that reasoning.",
+    construct_boundary: "The reasoning toward the endpoint must be present, not the endpoint alone. Predicting a likely endpoint before the data is back is task 10. Bare words like admit or discharge are not codable.",
+    case_format: "Static vignette with a bounded choice set. Current DispoBench architecture applies directly",
+    status: "V5 core",
+  },
+  "all-tasks:11": {
     task_code: "T12",
     guiding_question: "What does this patient need, and how do I say it?",
     cognitive_demand: "",
@@ -228,7 +194,7 @@ const CASE_CONTENT: Record<string, CaseContent> = {
     case_format: "Multi-turn simulated patient. Autograder concordance is the open question here",
     status: "V5 core",
   },
-  "communication:1": {
+  "all-tasks:12": {
     task_code: "T13",
     guiding_question: "What is someone else thinking, doing, or responsible for?",
     cognitive_demand: "",
@@ -240,7 +206,7 @@ const CASE_CONTENT: Record<string, CaseContent> = {
     case_format: "Multi-turn simulated colleague, with the trainee's level specified in the stem",
     status: "V5 core",
   },
-  "communication:2": {
+  "all-tasks:13": {
     task_code: "T14",
     guiding_question: "What is my own mind doing, and how do I manage it?",
     cognitive_demand: "",
@@ -251,6 +217,42 @@ const CASE_CONTENT: Record<string, CaseContent> = {
     construct_boundary: "Only the clinician's own mind. Spending external resources or ranking patients is task 2. Handing work to someone else is task 13. Frustration at what others are doing is neither.",
     case_format: "Seeded anchor plus think-aloud. Weakest autograder prospect in the set",
     status: "V5 core",
+  },
+  "all-tasks:14": {
+    task_code: "T15",
+    guiding_question: "Across all my patients, is everything moving and is anything missed?",
+    cognitive_demand: "",
+    cluster: "Partly inside Stanford V4 D3 (closed-loop tracking), at a different scope and timescale",
+    task_definition: "Going back over the whole set of patients mid-shift: re-triaging across patients by acuity, tracking that orders and results are moving, and confirming nothing has been missed.",
+    example_ed: "Mid-shift sweep of the whole board. Bed 16 has blood running and imaging back, bed 36's labs are reassuring and she can wait, bed 22 has been waiting two hours on an ultrasound that has not moved. Confirm nothing on the list has been dropped.",
+    example_primary_care: "End-of-week panel sweep: three abnormal results with no documented follow-up, two referrals never scheduled, and one biopsy result still outstanding. Establish what has stalled and what needs action now.",
+    construct_boundary: "Set-level, not one patient. A single endpoint decision is task 11, a single severity read is task 1, and choosing who to see next as an attention call is task 2.",
+    case_format: "Board or panel simulation with a state list. Cannot be a single-patient vignette",
+    status: "V5 core",
+  },
+  "all-tasks:15": {
+    task_code: "T16",
+    guiding_question: "Can this even happen here, and if not, how?",
+    cognitive_demand: "",
+    cluster: "Gap. No Stanford construct at any version",
+    task_definition: "Judging whether a plan can actually be carried out, given coverage, cost, appointment supply, service hours and who controls access, and working out a route around the block when there is one.",
+    example_ed: "The patient needs an MRI this hospital does not perform overnight, and the on-call neurosurgeon covers a second site. Reason about boarding until morning, transferring, or managing without the study.",
+    example_primary_care: "The guideline-preferred agent is not covered, prior authorisation takes three weeks, and the next endocrinology appointment is five months out. Work out which available route actually gets treatment started.",
+    construct_boundary: "The constraint must belong to the system, not the patient. What the patient can afford or get to is task 12. Cost as one factor in choosing between treatments is task 11.",
+    case_format: "Static vignette plus a local system context block, which makes ground truth site-specific",
+    status: "New in V6",
+  },
+  "all-tasks:16": {
+    task_code: "T17",
+    guiding_question: "What is this visit about, and what else goes in it?",
+    cognitive_demand: "",
+    cluster: "Gap. No Stanford construct at any version; scope selection is presupposed by every Stanford task",
+    task_definition: "Fixing what this contact is meant to be for and which of the patient's problems it will carry, including deciding to open something the patient did not come in about, or deliberately to leave something out.",
+    example_ed: "A frequent attender arrives with five active complaints and a request for a work note. Fix which single problem this visit will carry, and say why the others are not opened today.",
+    example_primary_care: "The visit is booked as routine diabetes and hypertension follow-up. At minute 12 the patient mentions exertional chest tightness. Re-frame what this contact is now for, and what is left for next time.",
+    construct_boundary: "The subject is what the contact will cover, not what information to look for (task 3) or where the illness is heading (task 10). Deciding a problem belongs to someone else is task 13.",
+    case_format: "Multi-turn, with the agenda emerging mid-visit rather than stated in the stem",
+    status: "New in V6",
   },
 };
 

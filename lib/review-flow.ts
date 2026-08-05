@@ -1,7 +1,10 @@
 import { caseStatus } from "@/lib/utils";
 import type { Section } from "@/lib/types";
 
-export const SECTION_ORDER = ["management", "diagnostic", "communication"] as const;
+// One section holds all 17 V6 constructs (migration 023). The former
+// management / diagnostic / communication split was dropped because the V6
+// taxonomy cuts across those categories.
+export const SECTION_ORDER = ["all-tasks"] as const;
 
 type CaseLite = {
   id: string;
@@ -39,8 +42,8 @@ export function buildSectionProgress(
     const total = sectionCases.length;
     const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
 
-    // All three domains are open from the start — reviewers may work
-    // Management, Diagnostic Reasoning, and Communication in any order.
+    // Nothing is gated: there is a single section, and tasks within it may be
+    // rated in any order.
     const locked = false;
 
     return {

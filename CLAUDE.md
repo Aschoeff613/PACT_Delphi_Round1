@@ -4,13 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Expert Case Review PACT — a modified Delphi-style expert rating platform where reviewers score **cognitive tasks** (not individual patient vignettes) across three sections (Management, Diagnostic Reasoning, Communication) using three 1–5 Likert scales, each rendered as a row of radio buttons: Clinical Relevance, Performance Variance, and AI Augmentation Potential.
+Expert Case Review PACT — a modified Delphi-style expert rating platform where reviewers score **cognitive tasks** (not individual patient vignettes) in a single section using three 1–5 Likert scales, each rendered as a row of radio buttons: Clinical Relevance, Performance Variance, and AI Augmentation Potential.
 
-Performance Variance asks how much competent clinicians would disagree about the right path forward on the task. It replaced the earlier "Benchmarkability / Saturation" dimension in migration 021, which also renamed `ratings.benchmarkability` to `performance_variance` — the two ask different questions, so ratings are not comparable across that boundary.
+Clinical Relevance asks how important the task is to everyday clinical care (it previously asked how
+severe the consequences of poor performance were; the anchors moved with it). Performance Variance asks
+how much competent clinicians would disagree about the right path forward on the task. It replaced the earlier "Benchmarkability / Saturation" dimension in migration 021, which also renamed `ratings.benchmarkability` to `performance_variance` — the two ask different questions, so ratings are not comparable across that boundary.
 
 Each task is graded on its own page and grounded by two case seeds — one Emergency Department, one Primary Care. A seed is a one-sentence clinical situation plus the decision the clinician must make out loud; it is not a full vignette.
 
-The task set is the **Erasmus V6 taxonomy**: 17 constructs (6 Management, 8 Diagnostic, 3 Communication), sourced from `PACT_EMC_V6_Tasks_CaseSeeds_1.xlsx` sheet `Cognitive Tasks` (ARPA/PACT Round-1 Codebook V6, 4 Aug 2026) and hardcoded in `lib/case-content.ts`. Section assignment follows the Stanford V3 task each V6 construct maps to in `PACT_Taxonomy_Crosswalk_EMC.xlsx`; constructs 5 and 17 have no Stanford equivalent, so their section is a judgment call. `task_code` carries the codebook number (`T1`–`T17`) and is load-bearing — each construct's `construct_boundary` refers to its neighbours by it ("drifted to task 4"). `construct_boundary`, `case_format`, and `status` are stored but not yet rendered. Superseded V3 ratings are preserved in `ratings_archive_v3`.
+The task set is the **Erasmus V6 taxonomy**: 17 constructs sourced from `PACT_EMC_V6_Tasks_CaseSeeds_1.xlsx` sheet `Cognitive Tasks` (ARPA/PACT Round-1 Codebook V6, 4 Aug 2026) and hardcoded in `lib/case-content.ts`.
+
+All 17 live in **one section** (`all-tasks`, "Cognitive Tasks") at `order_index` 0..16 in codebook order T1..T17. Migration 023 collapsed the earlier Management / Diagnostic Reasoning / Communication split: the V6 constructs cut across those categories — metacognitive self-regulation is neither diagnosis nor communication, multi-patient monitoring neither management nor diagnosis — so the three-way grouping, inherited from Stanford V3, misdescribed the task set. That migration also dropped `sections_name_check`, a CHECK constraint from migration 017 that hard-coded the three old section names. `task_code` carries the codebook number (`T1`–`T17`) and is load-bearing — each construct's `construct_boundary` refers to its neighbours by it ("drifted to task 4"). `construct_boundary`, `case_format`, and `status` are stored but not yet rendered. Superseded V3 ratings are preserved in `ratings_archive_v3`.
 
 ## Commands
 
@@ -57,7 +61,7 @@ All styles in `app/globals.css` (plain CSS, no Tailwind or CSS-in-JS). The revie
 
 ### Section Progression
 
-All three sections are open from the start — reviewers may work Management, Diagnostic Reasoning, and Communication in any order. Logic in `lib/review-flow.ts` (`locked` is always false).
+There is a single section and nothing is gated; tasks may be rated in any order. `lib/review-flow.ts` keeps the section machinery (`SECTION_ORDER`, `buildSectionProgress`, `locked` always false) so a future round can reintroduce groupings without reworking the routes.
 
 ## Environment Variables
 

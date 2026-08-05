@@ -1,10 +1,11 @@
 import Link from "next/link";
 import type { SectionWithProgress } from "@/lib/types";
 
+// Falls back to sections.description, so a section without an entry still
+// renders sensible copy.
 const copy: Record<string, string> = {
-  Management: "Review management-focused scenarios involving treatment choices, escalation, and workflow implications.",
-  Communication: "Rate communication-heavy tasks, handoffs, patient interactions, and coordination.",
-  "Diagnostic Reasoning": "Assess tasks centered on diagnostic reasoning, interpretation, and uncertainty."
+  "Cognitive Tasks":
+    "Rate all 17 candidate cognitive tasks. Each is graded on its own, grounded by one Emergency Department and one Primary Care example."
 };
 
 export function SectionCards({ sections }: { sections: SectionWithProgress[] }) {

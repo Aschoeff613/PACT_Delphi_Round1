@@ -177,9 +177,12 @@ textarea {
   line-height: 1.8;
 }
 
+/* auto-fit rather than a fixed 3 columns: there is now a single section, and a
+   lone card sitting in one third of the page reads as a layout bug. The 520px
+   cap stops one card stretching the full width instead. */
 .section-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 520px));
   gap: 18px;
   align-items: start;
 }
