@@ -16,11 +16,11 @@ const questions = [
   {
     key: "clinical_relevance",
     title: "Clinical Relevance",
-    help: "How important is this task to everyday clinical care?",
-    // Anchors track the question above: this scale measures how central the
-    // task is to routine practice, not how badly it goes wrong.
-    low: "Peripheral — rarely arises in everyday practice",
-    high: "Central — part of everyday clinical care"
+    help: "How clinically significant is this task — how much does it matter that it is done well?",
+    // Significance, not frequency: a rare task can be highly significant, and a
+    // common one can be low-stakes. The anchors deliberately avoid "how often".
+    low: "Minor — little bearing on patient care",
+    high: "Major — materially shapes patient care"
   },
   {
     key: "performance_variance",

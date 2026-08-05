@@ -178,11 +178,13 @@ textarea {
 }
 
 /* auto-fit rather than a fixed 3 columns: there is now a single section, and a
-   lone card sitting in one third of the page reads as a layout bug. The 520px
-   cap stops one card stretching the full width instead. */
+   lone card pinned to the left third read as a layout bug. justify-content
+   centres whatever number of cards exist; the 520px cap keeps a single card a
+   sensible width instead of stretching the full page. */
 .section-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 520px));
+  justify-content: center;
   gap: 18px;
   align-items: start;
 }
@@ -190,8 +192,10 @@ textarea {
 .section-card {
   min-height: 240px;
   border-radius: 24px;
-  border: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.97), rgba(17, 24, 39, 0.95));
+  /* Warmer than the surrounding panels, so the single card reads as the one
+     thing to click rather than another block of chrome. */
+  border: 1px solid rgba(184, 58, 58, 0.42);
+  background: linear-gradient(180deg, rgba(38, 22, 28, 0.96), rgba(24, 18, 26, 0.94));
   padding: 22px;
   box-shadow: var(--shadow);
   display: flex;
