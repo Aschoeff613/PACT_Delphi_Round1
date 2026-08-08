@@ -65,6 +65,13 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
   const activeRating = ratingsByCase.get(activeCase.id);
   const activeStatus = caseStatus(activeRating ?? null);
 
+  // Tasks may be rated in any order, so reaching the last one does not mean the
+  // review is done. The panel needs the remaining gaps to decide whether to
+  // offer "Complete review" or send the reviewer back to an unrated task.
+  const unratedOthers = navCases.filter(
+    (item) => item.id !== activeCase.id && item.status !== "completed"
+  );
+
   const content = getCaseContent(slug, activeCase.order_index);
 
   return (
@@ -138,6 +145,8 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
           }}
           previousHref={previousCase ? `/sections/${slug}?case=${previousCase.id}` : null}
           nextHref={nextCase ? `/sections/${slug}?case=${nextCase.id}` : null}
+          unratedHref={unratedOthers[0] ? `/sections/${slug}?case=${unratedOthers[0].id}` : null}
+          unratedCount={unratedOthers.length}
         />
       </div>
     </>

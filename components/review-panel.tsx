@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -65,37 +66,57 @@ const VALUE_LABELS: Record<string, Record<number, string>> = {
   }
 };
 
+function ratingIsComplete(rating: RatingState) {
+  return [
+    rating.clinical_relevance,
+    rating.performance_variance,
+    rating.ai_relevance
+  ].every((value) => value !== null);
+}
+
 export function ReviewPanel({
   caseId,
   initial,
   previousHref,
-  nextHref
+  nextHref,
+  unratedHref,
+  unratedCount
 }: {
   caseId: string;
   initial: RatingState;
   previousHref: string | null;
   nextHref: string | null;
+  /** First task other than this one still missing a score, if any. */
+  unratedHref: string | null;
+  /** How many tasks other than this one are still unscored. */
+  unratedCount: number;
 }) {
+  const router = useRouter();
   const [state, setState] = useState<RatingState>(initial);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const debounceRef = useRef<number | null>(null);
   const panelRef = useRef<HTMLElement | null>(null);
+  // Payload waiting on the debounce timer, so it can be flushed on unmount.
+  const pendingRef = useRef<RatingState | null>(null);
+  const initialRef = useRef(initial);
+  initialRef.current = initial;
+  // Completeness the server last told us about. Only a change here moves the
+  // progress bar or a sidebar dot, so only a change is worth a refresh.
+  const syncedCompleteRef = useRef(ratingIsComplete(initial));
 
+  // Keyed on caseId alone: `initial` is a fresh object on every parent render,
+  // so depending on it would clobber in-flight edits each time router.refresh()
+  // lands a new server render.
   useEffect(() => {
-    setState(initial);
+    setState(initialRef.current);
     setSavedAt(null);
     setStatus("idle");
+    syncedCompleteRef.current = ratingIsComplete(initialRef.current);
     panelRef.current?.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-  }, [caseId, initial]);
+  }, [caseId]);
 
-  const isCompleted = useMemo(() => {
-    return [
-      state.clinical_relevance,
-      state.performance_variance,
-      state.ai_relevance
-    ].every((value) => value !== null);
-  }, [state]);
+  const isCompleted = useMemo(() => ratingIsComplete(state), [state]);
 
   async function save(next: RatingState) {
     setStatus("saving");
@@ -112,11 +133,22 @@ export function ReviewPanel({
 
     setStatus("saved");
     setSavedAt(new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }));
+
+    // The progress bar and sidebar dots are server-rendered, so they stay stale
+    // until the client re-renders. Without this the final task never shows as
+    // done until the reviewer navigates somewhere else.
+    const nowComplete = ratingIsComplete(next);
+    if (nowComplete !== syncedCompleteRef.current) {
+      syncedCompleteRef.current = nowComplete;
+      router.refresh();
+    }
   }
 
   function queueSave(next: RatingState) {
     if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    pendingRef.current = next;
     debounceRef.current = window.setTimeout(() => {
+      pendingRef.current = null;
       void save(next);
     }, 350);
   }
@@ -126,6 +158,20 @@ export function ReviewPanel({
     setState(next);
     queueSave(next);
   }
+
+  // Leaving the section mid-debounce would otherwise drop the last score.
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) window.clearTimeout(debounceRef.current);
+      const pending = pendingRef.current;
+      if (!pending) return;
+      pendingRef.current = null;
+      navigator.sendBeacon?.(
+        "/api/ratings",
+        new Blob([JSON.stringify({ caseId, ...pending })], { type: "application/json" })
+      );
+    };
+  }, [caseId]);
 
   return (
     <aside ref={panelRef} className="review-scoring-panel">
@@ -234,9 +280,25 @@ export function ReviewPanel({
               <span className="primary-button button-disabled">Next task</span>
             </>
           )
+        ) : !isCompleted ? (
+          <>
+            <span className="case-nav-hint">Score all three dimensions to finish.</span>
+            <span className="primary-button button-disabled">Complete review</span>
+          </>
+        ) : unratedHref ? (
+          // Last task scored but earlier ones skipped: point at the gap rather
+          // than at a completion the reviewer has not actually reached.
+          <>
+            <span className="case-nav-hint">
+              {unratedCount} task{unratedCount === 1 ? "" : "s"} still unrated.
+            </span>
+            <Link className="primary-button" href={unratedHref}>
+              Go to unrated task
+            </Link>
+          </>
         ) : (
-          <Link className="ghost-button" href="/">
-            Back to sections
+          <Link className="primary-button" href="/">
+            Complete review
           </Link>
         )}
       </div>
