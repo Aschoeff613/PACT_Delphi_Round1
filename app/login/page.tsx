@@ -37,6 +37,71 @@ function buildReviewerCode() {
   return `R${randomBytes(3).toString("hex").toUpperCase()}`;
 }
 
+type ReviewerIdentity = {
+  id: string;
+  display_name: string;
+  last_name: string;
+  locked_at: string | null;
+  created_at: string;
+};
+
+// Strip everything but letters and digits so "priyank_jain", "Priyank Jain" and
+// "priyankjain" all reduce to the same key. The panel is small enough that a
+// collision between two different people is not a practical concern, and
+// sign-in is keyed on name anyway.
+function identityKey(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+// The reviewer panel is a few dozen rows, so matching in JS is cheaper than
+// getting `ilike` right: `_` is a LIKE wildcard, and PostgREST's single-object
+// mode returns a 406 whenever two rows share a name.
+async function findReviewersByKey(
+  admin: ReturnType<typeof createAdminClient>,
+  key: string
+): Promise<ReviewerIdentity[] | null> {
+  const { data, error } = await admin
+    .from("reviewers")
+    .select("id, display_name, last_name, locked_at, created_at")
+    .order("created_at", { ascending: true });
+
+  if (error || !data) {
+    return null;
+  }
+
+  return (data as ReviewerIdentity[]).filter(
+    (row) => identityKey(`${row.display_name}${row.last_name}`) === key
+  );
+}
+
+// Duplicate registrations used to lock a reviewer out permanently. When they
+// exist, return the account holding the most work so the reviewer lands back on
+// their real progress; `matches` is ordered oldest-first, so ties keep the
+// original account.
+async function pickMostAdvanced(
+  admin: ReturnType<typeof createAdminClient>,
+  matches: ReviewerIdentity[]
+): Promise<ReviewerIdentity> {
+  if (matches.length === 1) {
+    return matches[0];
+  }
+
+  const { data: ratingRows } = await admin
+    .from("ratings")
+    .select("reviewer_id")
+    .in("reviewer_id", matches.map((row) => row.id));
+
+  const counts = new Map<string, number>();
+  for (const row of (ratingRows ?? []) as { reviewer_id: string }[]) {
+    counts.set(row.reviewer_id, (counts.get(row.reviewer_id) ?? 0) + 1);
+  }
+
+  return matches.reduce(
+    (best, current) => ((counts.get(current.id) ?? 0) > (counts.get(best.id) ?? 0) ? current : best),
+    matches[0]
+  );
+}
+
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const session = await getReviewerSession();
@@ -59,6 +124,27 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
     if (!firstName || !lastName || !email) {
       redirect(`/login?error=missing_registration_fields&redirectTo=${encodeURIComponent(redirectTo)}`);
+    }
+
+    // Reviewers who are unsure whether they already signed up tend to register a
+    // second time. That used to create a duplicate name row, which then broke
+    // the returning login for good — so adopt the existing account instead.
+    const existing = await findReviewersByKey(admin, identityKey(`${firstName}${lastName}`));
+
+    if (existing && existing.length > 0) {
+      const reviewer = await pickMostAdvanced(admin, existing);
+
+      if (reviewer.locked_at) {
+        redirect(`/login?error=locked&redirectTo=${encodeURIComponent(redirectTo)}`);
+      }
+
+      await admin
+        .from("reviewers")
+        .update({ last_login_at: new Date().toISOString() })
+        .eq("id", reviewer.id);
+
+      await createReviewerSession(reviewer.id);
+      redirect(redirectTo);
     }
 
     for (let attempt = 0; attempt < 5; attempt += 1) {
@@ -92,33 +178,28 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   async function signIn(formData: FormData) {
     "use server";
 
-    // Username format: first_last (e.g. jane_smith)
-    const username = String(formData.get("username") || "").trim().toLowerCase();
+    // Username format: first_last (e.g. jane_smith). Spacing, capitalisation and
+    // punctuation are all forgiven — only the letters and digits have to match.
+    const username = String(formData.get("username") || "").trim();
     const redirectTo = String(formData.get("redirectTo") || "/");
     const admin = createAdminClient();
 
-    const firstUnderscore = username.indexOf("_");
-    if (!username || firstUnderscore < 1) {
+    const key = identityKey(username);
+    if (!key) {
       redirect(`/login?error=missing_return_fields&redirectTo=${encodeURIComponent(redirectTo)}`);
     }
 
-    const firstName = username.slice(0, firstUnderscore);
-    const lastName = username.slice(firstUnderscore + 1);
+    const matches = await findReviewersByKey(admin, key);
 
-    if (!firstName || !lastName) {
-      redirect(`/login?error=missing_return_fields&redirectTo=${encodeURIComponent(redirectTo)}`);
+    if (!matches) {
+      redirect(`/login?error=lookup_failed&redirectTo=${encodeURIComponent(redirectTo)}`);
     }
 
-    const { data: reviewer } = await admin
-      .from("reviewers")
-      .select("id, locked_at, display_name, last_name")
-      .ilike("display_name", firstName)
-      .ilike("last_name", lastName)
-      .maybeSingle();
-
-    if (!reviewer) {
+    if (matches.length === 0) {
       redirect(`/login?error=invalid_identity&redirectTo=${encodeURIComponent(redirectTo)}`);
     }
+
+    const reviewer = await pickMostAdvanced(admin, matches);
 
     if (reviewer.locked_at) {
       redirect(`/login?error=locked&redirectTo=${encodeURIComponent(redirectTo)}`);
@@ -150,6 +231,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         )}
         {params.error === "registration_failed" && (
           <p className="error-banner">Registration failed. Please try again.</p>
+        )}
+        {params.error === "lookup_failed" && (
+          <p className="error-banner">
+            We could not reach the reviewer records just now. Please try again in a moment.
+          </p>
         )}
 
         <div className="login-layout">
