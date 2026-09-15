@@ -7,3 +7,6 @@ build/
 .DS_Store
 *.log
 tsconfig.tsbuildinfo
+
+# Vercel link — must not be committed; it points a clone at someone else project
+.vercel

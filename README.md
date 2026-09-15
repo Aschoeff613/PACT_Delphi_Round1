@@ -1,4 +1,34 @@
-# Expert Case Review
+# PACT Delphi — Round 1 instrument
+
+The web app panelists used in **Round 1** of the PACT Delphi: each of the 17
+candidate cognitive tasks rated on three 1–5 scales (clinical relevance,
+performance variance, AI augmentation potential).
+
+Round 1 was fielded 3–11 August 2026.
+
+## What this repository is
+
+A copy of `perezcodex/expert-case-review-PACT`, taken at commit
+`fe656c5`, brought under this account so the four PACT repositories sit
+together and the Round 1 instrument is preserved alongside the round it
+fielded.
+
+**The live Round 1 deployment is still served from the original repository**,
+from perezcodex's Vercel project `expert-case-review-pact`. This copy is not
+connected to Vercel and pushing to it deploys nothing. The tracked `.vercel`
+link that pointed at that project has been removed here, so running `vercel`
+in this directory cannot deploy over the original.
+
+Only `main` was copied. Four work-in-progress branches remain in the original.
+
+| Repository | Role |
+| --- | --- |
+| **this repository** | Round 1 instrument — rating the 17 tasks |
+| [PACT_Delphi_Round2](https://github.com/Aschoeff613/PACT_Delphi_Round2) | Round 2 instrument — ranking the 17 tasks |
+| [PACT_Delphi_Analysis](https://github.com/Aschoeff613/PACT_Delphi_Analysis) | The R analysis for both rounds |
+| [PACT_Literature_Review](https://github.com/Aschoeff613/PACT_Literature_Review) | Task taxonomy derivation |
+
+---
 
 Structured expert case rating app for a modified Delphi-style exercise using self-chosen reviewer codes instead of email magic links.
 
